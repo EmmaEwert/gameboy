@@ -1,3 +1,16 @@
+section "V-Blank", rom0[$40]
+  ld    c,$68
+  ld    a,%10000000 ; auto increment from palette 0 color 0
+  ld    [c],a
+  inc   c
+  ld    a,e
+  ld    [c],a
+  ld    a,d
+  ld    [c],a
+  inc   de
+  reti
+  ;fixme: overflows well into next interrupt section
+
 section "Start", rom0[$101]
   jp    Main
   dw    $ceed,$6666,$cc0d,$000b,$0373,$0083,$000c,$000d ; Nintendo
@@ -8,13 +21,11 @@ section "Start", rom0[$101]
 
 section "Program", rom0[$150]
 Main
-  ld    a,%10000000
-  ld    hl,$ff69
+  ld    a,%00000001
+  ldh   [$ff],a     ; enable V-Blank interrupt
+  ei
 .Update
-  ld    [$ff68],a
-  ld    [hl],c
-  ld    [hl],b
-  inc   bc
-  jp    Main
+  halt
+  jp    .Update
 
 ; vim:syn=rgbasm
