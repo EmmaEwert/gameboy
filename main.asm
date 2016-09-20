@@ -8,17 +8,7 @@ section "Header", rom0[$100]
   db    0,0,0,0,$33 ; cart, rom, ram, region, old license
 
 section "LCD Status interrupt", rom0[$48]
-  ld    c,$68
-  ld    a,%10000000 ; auto increment from palette 0 color 0
-  ld    [c],a
-  inc   c
-  ld    a,e
-  ld    [c],a
-  ld    a,d
-  ld    [c],a
-  inc   de
-  reti
-  ;fixme: overflows well into next interrupt section
+  jp HBlank
 
 section "Program", rom0[$150]
 Main
@@ -30,4 +20,17 @@ Main
 .Update
   halt
   jp    .Update
+
+HBlank
+  ld    c,$68
+  ld    a,%10000000 ; auto increment from palette 0 color 0
+  ld    [c],a
+  inc   c
+  ld    a,e
+  ld    [c],a
+  ld    a,d
+  ld    [c],a
+  inc   de
+  reti
+
 ; vim:syn=rgbasm
