@@ -1,4 +1,4 @@
-section "V-Blank", rom0[$40]
+section "LCD Status", rom0[$48] ; interrupt
   ld    c,$68
   ld    a,%10000000 ; auto increment from palette 0 color 0
   ld    [c],a
@@ -21,8 +21,10 @@ section "Start", rom0[$101]
 
 section "Program", rom0[$150]
 Main
-  ld    a,%00000001
-  ldh   [$ff],a     ; enable V-Blank interrupt
+  ld    a,%00000010
+  ldh   [$ff],a     ; enable LCD STAT interrupt
+  ld    a,%00001000
+  ldh   [$41],a     ; enable H-Blank interrupt
   ei
 .Update
   halt
