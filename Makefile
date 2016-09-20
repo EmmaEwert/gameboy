@@ -4,5 +4,8 @@ all:
 	rgbfix -v den.gb
 	cp den.gb /media/sf_Share/
 
+palette:
+	go build palette.go
+
 clean:
-	rm main.obj den.gb
+	rm main.obj den.gb palette
