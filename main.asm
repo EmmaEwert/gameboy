@@ -17,6 +17,7 @@ Main
   ld    a,%00001000
   ldh   [$41],a     ; enable H-Blank interrupt
   call  LoadTiles
+  call  LoadPalettes
   ei
 .Update
   halt
@@ -28,11 +29,32 @@ LoadTiles
 .while;b --> 0
   ld    a,[hl]
   swap  h
-  ldi   [hl],a
+  ld    [hl+],a
   swap  h
   dec   b
   jp    nz,.while
   ret
+
+LoadPalettes
+  ld    c,$68
+  ld    a,%10000000
+  ld    [c],a
+  inc   c
+  ld    hl,$0700    ; ROM
+  ld    b,$08;bytes, 2 per color = 4 colors
+.while;b --> 0
+  ld    a,[hl+]
+  ld    [c],a
+  dec   b
+  jp    nz,.while
+  ret
+
+section "Palette data", rom0[$700]
+        ; BBBBBGGGGGRRRRR
+  dw    %0100101001010000 ; #809090
+  dw    %0011110111101110 ; #707878
+  dw    %0011110110001101 ; #686078
+  dw    %0010110100101010 ; #504858
 
 section "Tile data", rom0[$800]
   dw    `23311111
