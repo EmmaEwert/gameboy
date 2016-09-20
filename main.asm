@@ -25,7 +25,7 @@ Main
 
 LoadTiles
   ld    hl,$0800    ; ROM, swap(h) = RAM up to $80ff
-  ld    b,$10       ; $n0 = n tiles
+  ld    b,$20       ; $n0 = n tiles
 .while;b --> 0
   ld    a,[hl]
   swap  h
@@ -70,5 +70,14 @@ section "Tile data", rom0[$800]
   dw    `31113333
   dw    `30013333
   dw    `00013333
+
+  dw    `11100000
+  dw    `11100000
+  dw    `11000000
+  dw    `11000000
+  dw    `33002000
+  dw    `33002200
+  dw    `33002200
+  dw    `30002200
 
 ; vim:syn=rgbasm
