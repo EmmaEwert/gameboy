@@ -17,6 +17,7 @@ Main
   ld    a,%00001000
   ldh   [$41],a     ; enable H-Blank interrupt
   call  LoadTiles
+  call  LoadMap
   call  LoadPalettes
   ei
 .Update
@@ -35,13 +36,24 @@ LoadTiles
   jp    nz,.while
   ret
 
+LoadMap
+  ld    hl,$9800    ; VRAM background map
+  xor   a
+  ld    b,$2;tiles
+.while;b --> 0
+  ld    [hl+],a
+  inc   a
+  dec   b
+  jp    nz,.while
+  ret
+
 LoadPalettes
   ld    c,$68
   ld    a,%10000000
   ld    [c],a
   inc   c
   ld    hl,$0700    ; ROM
-  ld    b,$08;bytes, 2 per color = 4 colors
+  ld    b,$10;bytes, 2 per color = 8 colors
 .while;b --> 0
   ld    a,[hl+]
   ld    [c],a
