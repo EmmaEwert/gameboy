@@ -29,6 +29,8 @@ with the dynamic parts hardcoded into the instructions. The code can
 then be executed directly from RAM. For example, palette changes during
 H-Blank.
 
+Palettes can apparently be written to in all video modes except mode 3.
+
 [Circular map cutoff](http://www.coranac.com/tonc/text/dma.htm#sec-demo)
 might be possible by rendering map into a window, and resizing this
 window during each H-Blank.
