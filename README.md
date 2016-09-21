@@ -42,6 +42,21 @@ displayed.
 The fact that the screen is somewhat interlaced (last and current frame
 are mixed) might be taken advantage of.
 
+## Mid-frame palette swap
+
+Palettes can be written to in modes 0, 1, and 2 (H-Blank, V-Blank and
+OAM read, respectively). H-Blank and OAM read happen after each
+scanline, and last for 201-207 cycles and 77-83 cycles, respectively.
+
+VRAM read (mode 3) lasts for 169-175 cycles, and can be used to prepare
+for the palette swap code to be executed during mode 0 and 2.
+
+V-Blank can be used to prepare the initial and per-frame states for
+rendering.
+
+A complete scanline cycle takes 456 cycles, so H-Blank + OAM read (where
+palettes can be written to) continuously last **281-287 cycles**.
+
 ## Gotchas
 
 The `halt` instruction repeats the next byte twice. Avoid by using `nop`
