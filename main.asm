@@ -7,15 +7,21 @@ section "Header", rom0[$100]
   db    "TITLE      CODE",$80,0,0,0 ; Title&ID, GBC?, 2 license, SGB?
   db    0,0,0,0,$33 ; cart, rom, ram, region, old license
 
-section "LCD Status", rom0[$48]
+section "V-Blank", rom0[$40]
+  call LoadPalettes
   reti
+
+section "LCD Status", rom0[$48] ; LYC=LY ($ff45=$ff44) interrupt, for now
+  jp    RefreshPalette
 
 section "Program", rom0[$150]
 Main
-  ld    a,%00000010
-  ldh   [$ff],a     ; enable LCD STAT interrupt
-  ld    a,%00001000
-  ldh   [$41],a     ; enable H-Blank interrupt
+  ld    a,%00000011
+  ldh   [$ff],a     ; enable V-Blank and LCD STAT interrupt
+  ld    a,%01000000
+  ldh   [$41],a     ; enable LYC=LY interrupt
+  ld    a,$03       ; interrupt at line $03
+  ldh   [$45],a
   call  LoadTiles
   call  LoadMap
   call  LoadPalettes
@@ -60,6 +66,25 @@ LoadPalettes
   dec   b
   jp    nz,.while
   ret
+
+RefreshPalette
+  ld    c,$68
+  ld    a,%10000100
+  ld    [c],a
+  inc   c
+  ld    hl,$ff41
+  xor   a
+  ld    de,%0001100010100110
+.wait
+  bit   1,[hl]
+  jp    nz,.wait
+  bit   0,[hl]
+  jp    nz,.wait
+  ld    a,e
+  ld    [c],a
+  ld    a,d
+  ld    [c],a
+  reti
 
 section "Palette data", rom0[$700]
         ; BBBBBGGGGGRRRRR
