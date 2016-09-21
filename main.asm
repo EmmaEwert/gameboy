@@ -45,17 +45,18 @@ LoadTiles
   jr    nz,.while
   ret
 
-LoadMap
-  ld    hl,$9800    ; VRAM background map
-  xor   a
-  ld    b,$8;tiles
+LoadMap;Data
+  ld    b,$14       ; $14 tiles
+  ld    de,$9800    ; VRAM background map
+  ld    hl,MapData
 .while;b --> 0
-  ld    [hl+],a
-  inc   a
+  ld    e,l
+  ld    a,[hl+]
+  ld    [de],a
   dec   b
   jr    nz,.while
 ;LoadMapAttributes
-  ld    bc,$084f    ; $8 tiles, $ff4f=VRAM Bank
+  ld    bc,$144f    ; $14 tiles, $ff4f=VRAM Bank
   ld    de,$9800
   ld    hl,MapAttributes
   ld    a,1
@@ -117,7 +118,7 @@ EnableLCD
   set   7,[hl]
   ret
 
-section "Palette data", rom0[$600]
+section "Palette data", rom0[$500]
 PaletteData
         ; BBBBBGGGGGRRRRR
   dw    %0100101001010000 ; #809090
@@ -135,10 +136,18 @@ PaletteData
   dw    %0001100010100110 ; #302830
   dw    %0010110101100111 ; #385858
 
+section "Map data", rom0[$600]
+MapData
+        ;0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19
+  db    $00,$01,$02,$03,$04,$05,$06,$07,$07,$07,$07,$08,$08,$07,$07,$07,$07,$07,$09,$0a
+
 section "Map attributes", rom0[$700]
 MapAttributes
-  db    %00000000,%00000000,%00000000,%00000001
-  db    %00000001,%00000010,%00000010,%00000010
+  db    %00000000,%00000000,%00000000,%00000001; 0- 3
+  db    %00000001,%00000010,%00000010,%00000010; 4- 7
+  db    %00000010,%00000010,%00000010,%00000010; 8-11
+  db    %00100010,%00000010,%00000010,%00000010;12-15
+  db    %00000010,%00000010,%00000010,%00000010;16-19
 
 section "Tile data", rom0[$800]
 TileData
