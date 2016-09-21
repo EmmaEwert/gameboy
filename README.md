@@ -61,7 +61,7 @@ A single-color palette write time of 36 cycles, this allows 7 palette
 color changes per scanline (252 cycles), with 29-35 cycles to spare
 before VRAM read.
 
-```
+```asm
 ; bc = $ff45, hl = $ff68, de = $ff69
 ld [hl],index   ; 12 cycles, hardcoded index
 ld [de],colorLO ; 12 cycles, hardcoded colorLO
