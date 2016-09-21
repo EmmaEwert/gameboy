@@ -51,6 +51,21 @@ LoadMap
   inc   a
   dec   b
   jr    nz,.while
+;LoadMapAttributes
+  ld    bc,$054f    ; $5 tiles, $ff4f=VRAM Bank
+  ld    de,$9800
+  ld    hl,$0700
+  ld    a,1
+  ld    [c],a       ; VRAM Bank 1
+.while2;b --> 0
+  ld    e,l         ; de = $98xx, hl = 07xx (256 bytes at most)
+  ld    a,[hl+]
+  ld    [de],a
+  dec   b
+  jr    nz,.while2
+;Finish
+  ld    a,0
+  ld    [c],a       ; VRAM Bank 0
   ret
 
 LoadPalettes
@@ -58,7 +73,7 @@ LoadPalettes
   ld    a,%10000000
   ld    [c],a
   inc   c
-  ld    hl,$0700    ; ROM
+  ld    hl,$0600    ; ROM
   ld    b,$10;bytes, 2 per color = 8 colors = 2 palettes
 .while;b --> 0
   ld    a,[hl+]
@@ -69,7 +84,7 @@ LoadPalettes
 
 RefreshPalette
   ld    c,$68
-  ld    a,%10000100
+  ld    a,%10001100
   ld    [c],a
   inc   c
   ld    hl,$ff41
@@ -84,7 +99,7 @@ RefreshPalette
   ld    [c],a
   reti
 
-section "Palette data", rom0[$700]
+section "Palette data", rom0[$600]
         ; BBBBBGGGGGRRRRR
   dw    %0100101001010000 ; #809090
   dw    %0011110111101110 ; #707878
@@ -96,6 +111,8 @@ section "Palette data", rom0[$700]
   dw    %0011110110001101 ; #686078
   dw    %0010110100101010 ; #504858
 
+section "Map attributes", rom0[$700]
+  db    %00000000,%00000000,%00000000,%00000001,%00000001,
 
 section "Tile data", rom0[$800]
   dw    `00000000
