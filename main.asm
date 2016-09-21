@@ -34,8 +34,8 @@ Main
   jr    .Update
 
 LoadTiles
-  ld    hl,$0800    ; ROM, swap(h) = RAM up to $80ff
-  ld    b,$e0       ; $n0 = n tiles
+  ld    hl,$0800    ; TileData ROM, swap(h) = RAM up to $80ff
+  ld    b,$b0       ; $n0 = n tiles
 .while;b --> 0
   ld    a,[hl]
   swap  h
@@ -57,7 +57,7 @@ LoadMap
 ;LoadMapAttributes
   ld    bc,$084f    ; $8 tiles, $ff4f=VRAM Bank
   ld    de,$9800
-  ld    hl,$0700
+  ld    hl,MapAttributes
   ld    a,1
   ld    [c],a       ; VRAM Bank 1
 .while2;b --> 0
@@ -76,7 +76,7 @@ LoadPalettes
   ld    a,%10000000
   ld    [c],a
   inc   c
-  ld    hl,$0600    ; ROM
+  ld    hl,PaletteData    ; ROM
   ld    b,$18;bytes, 2 per color = 12 colors = 3 palettes
 .while;b --> 0
   ld    a,[hl+]
@@ -117,8 +117,8 @@ EnableLCD
   set   7,[hl]
   ret
 
-
 section "Palette data", rom0[$600]
+PaletteData
         ; BBBBBGGGGGRRRRR
   dw    %0100101001010000 ; #809090
   dw    %0011110111101110 ; #707878
@@ -136,10 +136,12 @@ section "Palette data", rom0[$600]
   dw    %0010110101100111 ; #385858
 
 section "Map attributes", rom0[$700]
+MapAttributes
   db    %00000000,%00000000,%00000000,%00000001
   db    %00000001,%00000010,%00000010,%00000010
 
 section "Tile data", rom0[$800]
+TileData
   dw    `00000000   ; 0
   dw    `00000000
   dw    `00000000
