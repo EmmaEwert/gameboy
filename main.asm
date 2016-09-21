@@ -1,5 +1,5 @@
 section "Header", rom0[$100]
-  nop
+  di
   jp    Main
   dw    $ceed,$6666,$cc0d,$000b,$0373,$0083,$000c,$000d ; Nintendo
   dw    $0008,$111f,$8889,$000e,$dccc,$6ee6,$dddd,$d999 ; logo, exact
@@ -16,6 +16,7 @@ section "LCD Status", rom0[$48] ; LYC=LY ($ff45=$ff44) interrupt, for now
 
 section "Program", rom0[$150]
 Main
+  call  DisableLCD
   ld    a,%00000011
   ldh   [$ff],a     ; enable V-Blank and LCD STAT interrupt
   ld    a,%01000000
@@ -25,14 +26,16 @@ Main
   call  LoadTiles
   call  LoadMap
   call  LoadPalettes
+  call  EnableLCD
   ei
 .Update
   halt
+  nop
   jr    .Update
 
 LoadTiles
   ld    hl,$0800    ; ROM, swap(h) = RAM up to $80ff
-  ld    b,$50       ; $n0 = n tiles
+  ld    b,$e0       ; $n0 = n tiles
 .while;b --> 0
   ld    a,[hl]
   swap  h
@@ -45,14 +48,14 @@ LoadTiles
 LoadMap
   ld    hl,$9800    ; VRAM background map
   xor   a
-  ld    b,$5;tiles
+  ld    b,$8;tiles
 .while;b --> 0
   ld    [hl+],a
   inc   a
   dec   b
   jr    nz,.while
 ;LoadMapAttributes
-  ld    bc,$054f    ; $5 tiles, $ff4f=VRAM Bank
+  ld    bc,$084f    ; $8 tiles, $ff4f=VRAM Bank
   ld    de,$9800
   ld    hl,$0700
   ld    a,1
@@ -74,7 +77,7 @@ LoadPalettes
   ld    [c],a
   inc   c
   ld    hl,$0600    ; ROM
-  ld    b,$10;bytes, 2 per color = 8 colors = 2 palettes
+  ld    b,$18;bytes, 2 per color = 12 colors = 3 palettes
 .while;b --> 0
   ld    a,[hl+]
   ld    [c],a
@@ -99,6 +102,22 @@ RefreshPalette
   ld    [c],a
   reti
 
+DisableLCD
+  ld    bc,$9044
+  ld    hl,$ff40    ; LCD control
+.wait;while LY < 144 (not in vblank)
+  ld    a,[c]       ; a = LY
+  cp    b           ; LY < 144?
+  jr    c,.wait
+  res   7,[hl]
+  ret
+
+EnableLCD
+  ld    hl,$ff40
+  set   7,[hl]
+  ret
+
+
 section "Palette data", rom0[$600]
         ; BBBBBGGGGGRRRRR
   dw    %0100101001010000 ; #809090
@@ -111,11 +130,17 @@ section "Palette data", rom0[$600]
   dw    %0011110110001101 ; #686078
   dw    %0010110100101010 ; #504858
 
+  dw    %0010000011100111 ; #383840
+  dw    %0001010010000101 ; #282028
+  dw    %0001100010100110 ; #302830
+  dw    %0010110101100111 ; #385858
+
 section "Map attributes", rom0[$700]
-  db    %00000000,%00000000,%00000000,%00000001,%00000001,
+  db    %00000000,%00000000,%00000000,%00000001
+  db    %00000001,%00000010,%00000010,%00000010
 
 section "Tile data", rom0[$800]
-  dw    `00000000
+  dw    `00000000   ; 0
   dw    `00000000
   dw    `00000000
   dw    `00000000
@@ -124,7 +149,7 @@ section "Tile data", rom0[$800]
   dw    `11000001
   dw    `00011001
 
-  dw    `00011111
+  dw    `00011111   ; 1
   dw    `00011111
   dw    `00111111
   dw    `00111111
@@ -133,7 +158,7 @@ section "Tile data", rom0[$800]
   dw    `11111112
   dw    `11111112
 
-  dw    `12222222
+  dw    `12222222   ; 2
   dw    `12222222
   dw    `22222222
   dw    `22222222
@@ -142,7 +167,7 @@ section "Tile data", rom0[$800]
   dw    `22332233
   dw    `23333333
 
-  dw    `23311111
+  dw    `23311111   ; 3
   dw    `23311133
   dw    `33311133
   dw    `33111333
@@ -151,7 +176,7 @@ section "Tile data", rom0[$800]
   dw    `30013333
   dw    `00013333
 
-  dw    `11100000
+  dw    `11100000   ; 4
   dw    `11100000
   dw    `11000000
   dw    `11000000
@@ -159,5 +184,59 @@ section "Tile data", rom0[$800]
   dw    `33002200
   dw    `33002200
   dw    `30002200
+
+  dw    `00000222   ; 5
+  dw    `00000222
+  dw    `00002222
+  dw    `00002221
+  dw    `00022211
+  dw    `00022211
+  dw    `00022111
+  dw    `00221111
+
+  dw    `22111111   ; 6
+  dw    `11111111
+  dw    `11111111
+  dw    `11222111
+  dw    `11222111
+  dw    `12221111
+  dw    `12221111
+  dw    `22221111
+
+  dw    `11111111   ; 7
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+
+  dw    `11111111   ; 8, 8h
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111133
+
+  dw    `11111112   ; 9
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+
+  dw    `22222222   ; a
+  dw    `22222222
+  dw    `12222222
+  dw    `11122222
+  dw    `12122222
+  dw    `12222221
+  dw    `12222211
+  dw    `11222111
 
 ; vim:syn=rgbasm
