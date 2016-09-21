@@ -57,6 +57,46 @@ rendering.
 A complete scanline cycle takes 456 cycles, so H-Blank + OAM read (where
 palettes can be written to) continuously last **281-287 cycles**.
 
+A single-color palette write time of 36 cycles, this allows 7 palette
+color changes per scanline (252 cycles), with 29-35 cycles to spare
+before VRAM read.
+
+```
+; bc = $ff45, hl = $ff68, de = $ff69
+ld [hl],index   ; 12 cycles, hardcoded index
+ld [de],colorLO ; 12 cycles, hardcoded colorLO
+ld [de],colorHI ; 12 cycles, hardcoded colorHI
+                ;=36 cycles
+```
+
+During VRAM read, the next LYC can be set from hardcoded RAM with
+`ld [bc],lyc`, assuming `bc = $ff45`.
+
+### Palette swap data (tentative)
+
+Assuming every scanline applies the maximum number of palette swaps, the
+data does not need to include swap count or line number.
+
+Of course, the redundant data need not exist in ROM. Alternatively, a
+single byte per useful scanline in ROM might suffice for determining how
+many redundant swap operations should be appended when the data is copied
+to RAM.
+
+| Data    | Bits | Description                      |
+|---------|------|----------------------------------|
+| swaps   | 0-2  | 0-7 color changes                |
+| next    | 3-7  | (0-31)+1 lines until next swap   |
+| index0  | 0-5  | palette 0-7, color 0-3, byte 0-1 |
+|         | 7    | always 1 (write two color bytes) |
+| color0  | 0-14 | 14 BBBBBGGGGGRRRRR 0             |
+| ‥       |      |                                  |
+| index6  | 0-5  | palette 0-7, color 0-3, byte 0-1 |
+|         | 7    | always 1 (write two color bytes) |
+| color6  | 0-14 | 14 BBBBBGGGGGRRRRR 0             |
+
+If this ends up taking too much ROM space, the data can potentially be
+run length encoded.
+
 ## Gotchas
 
 The `halt` instruction repeats the next byte twice. Avoid by using `nop`
