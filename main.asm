@@ -49,17 +49,7 @@ LoadTiles
   jr    nz,.while
   ret
 
-LoadMap;Data
-  ld    b,$34       ; $20 (one row) + $14 indices
-  ld    de,$9800    ; VRAM background map
-  ld    hl,MapData
-.while;b --> 0
-  ld    e,l
-  ld    a,[hl+]
-  ld    [de],a
-  dec   b
-  jr    nz,.while
-;LoadMapAttributes
+LoadMap;Attributes, then Indices
   ld    hl,$ff4f    ; $ff4f=VRAM Bank
   ld    de,$9800
   ld    bc,MapAttributes
@@ -75,9 +65,21 @@ LoadMap;Data
   ld    [hl],e
   inc   l;$55       ; $ff55.7 = mode (0: general purpose, 1: H-Blank)
   ld    a,3         ; $20 + $14 attributes, ceil($34,$10) = $40, $40 / $10 - 1 = 3
-  ld    [hl],a       ; $ff55.0-6 = bytes / $10 - 1, write = start DMA transfer
+  ld    [hl],a      ; $ff55.0-6 = bytes / $10 - 1, write = start DMA transfer
+  ld    bc,MapIndices
   xor   a
   ld    [$ff4f],a   ; VRAM Bank 0
+  ld    l,$51
+  ld    [hl],b
+  inc   l;$51
+  ld    [hl],c
+  inc   l;$52
+  ld    [hl],d
+  inc   l;$53
+  ld    [hl],e
+  inc   l;$55
+  ld    a,3
+  ld    [hl],a      ; start DMA transfer
   ret
 
 LoadPalettes
@@ -154,14 +156,14 @@ PaletteData
   dw    %0010010100100110 ; #304848
   dw    %0001100011000100 ; #203030
 
-section "Map data", rom0[$600]
-MapData
+section "Map tile indices", rom0[$600]
+MapIndices
         ;0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19
   db    $00,$01,$02,$03,$04,$05,$06,$07,$07,$07,$07,$08,$08,$07,$07,$07,$07,$07,$09,$0a;$0a>
   dw    0,0,0,0,0,0
   db    $0b,$0c,$0d,$0e,$0f,$10,$08,$07,$07,$07,$07,$11,$11,$07,$07,$07,$07,$07,$07,$12;$12>
 
-section "Map attributes", rom0[$700]
+section "Map tile attributes", rom0[$700]
 MapAttributes
                     ; row 0
   db    %00000000,%00000000,%00000000,%00000001; 0- 3
