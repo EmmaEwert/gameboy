@@ -50,7 +50,7 @@ LoadTiles
   ret
 
 LoadMap;Data
-  ld    b,$34       ; $14 tiles + $20 tiles (one row)
+  ld    b,$34       ; $20 (one row) + $14 indices
   ld    de,$9800    ; VRAM background map
   ld    hl,MapData
 .while;b --> 0
@@ -60,20 +60,24 @@ LoadMap;Data
   dec   b
   jr    nz,.while
 ;LoadMapAttributes
-  ld    bc,$344f    ; $14 tiles + $20 tiles (one row), $ff4f=VRAM Bank
+  ld    hl,$ff4f    ; $ff4f=VRAM Bank
   ld    de,$9800
-  ld    hl,MapAttributes
+  ld    bc,MapAttributes
   ld    a,1
-  ld    [c],a       ; VRAM Bank 1
-.while2;b --> 0
-  ld    e,l         ; de = $98xx, hl = 07xx (256 bytes at most)
-  ld    a,[hl+]
-  ld    [de],a
-  dec   b
-  jr    nz,.while2
-;Finish
-  ld    a,0
-  ld    [c],a       ; VRAM Bank 0
+  ld    [hl+],a     ; VRAM Bank 1
+  inc   l           ; $ff51-$ff54: DMA srcHI, srcLO, dstHI, dstLO
+  ld    [hl],b
+  inc   l;$52
+  ld    [hl],c
+  inc   l;$53
+  ld    [hl],d
+  inc   l;$54
+  ld    [hl],e
+  inc   l;$55       ; $ff55.7 = mode (0: general purpose, 1: H-Blank)
+  ld    a,3         ; $20 + $14 attributes, ceil($34,$10) = $40, $40 / $10 - 1 = 3
+  ld    [hl],a       ; $ff55.0-6 = bytes / $10 - 1, write = start DMA transfer
+  xor   a
+  ld    [$ff4f],a   ; VRAM Bank 0
   ret
 
 LoadPalettes
