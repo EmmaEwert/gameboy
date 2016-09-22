@@ -40,6 +40,13 @@ displayed.
 The fact that the screen is somewhat interlaced (last and current frame
 are mixed) might be taken advantage of.
 
+The Gameboy Color supports 384 tiles, enough to cover 81.25 % of the
+32×32 background map. The remaining 18.75 % (192 tiles) means the map
+can be completely covered when each row reuses 6 tiles on average.
+
+The display can mostly be covered in unique tiles, as it shows 360-398
+tiles, depending on whether the scroll values are tile-aligned.
+
 ## Mid-frame palette swap
 
 Palettes can be written to in modes 0, 1, and 2 (H-Blank, V-Blank and
