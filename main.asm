@@ -128,7 +128,7 @@ EnableLCD
   set   7,[hl]
   ret
 
-section "Palette data", rom0[$500]
+section "Palette data", romx,bank[1]
 PaletteData
         ; BBBBBGGGGGRRRRR
   dw    %0100101001010000 ; #809090
@@ -156,14 +156,17 @@ PaletteData
   dw    %0010010100100110 ; #304848
   dw    %0001100011000100 ; #203030
 
-section "Map tile indices", rom0[$600]
+  dw    0,0,0,0 ; Align to $10 boundary for DMA transfer
+
+section "Map tile indices", romx,bank[1]
 MapIndices
         ;0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19
   db    $00,$01,$02,$03,$04,$05,$06,$07,$07,$07,$07,$08,$08,$07,$07,$07,$07,$07,$09,$0a;$0a>
   dw    0,0,0,0,0,0
   db    $0b,$0c,$0d,$0e,$0f,$10,$08,$07,$07,$07,$07,$11,$11,$07,$07,$07,$07,$07,$07,$12;$12>
+  dw    0,0,0,0,0,0 ; Align to $10 boundary for DMA transfer
 
-section "Map tile attributes", rom0[$700]
+section "Map tile attributes", romx,bank[1]
 MapAttributes
                     ; row 0
   db    %00000000,%00000000,%00000000,%00000001; 0- 3
@@ -177,8 +180,9 @@ MapAttributes
   db    %00000010,%00000010,%00000010,%00000100; 8-11
   db    %00100100,%00000010,%00000010,%00000010;12-15
   db    %00000010,%00000010,%00000010,%00000010;16-19
+  dw    0,0,0,0,0,0 ; row 2, align to $10 boundary for DMA transfer
 
-section "Tile data", rom0[$800]
+section "Tile data", romx,bank[1]
 TileData
   dw    `00000000   ; 00
   dw    `00000000
