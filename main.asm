@@ -34,25 +34,25 @@ Main
   jr    .Update
 
 LoadTiles
-  ld    de,TileData ; Tiledata ROM
-  ld    hl,$8000    ; Tiledata RAM
-  ld    bc,$0130    ; $nnn0 = n tiles
-.while;b --> 0
-  ld    a,[de]
-  ld    [hl+],a
-  inc   de
-  dec   bc
-  xor   a
-  cp    c
-  jr    nz,.while
-  cp    b
-  jr    nz,.while
+  ld    hl,$ff51    ; $ff51-$ff55: VRAM DMA transfer
+  ld    bc,TileData ; Tiledata ROM
+  ld    de,$8000    ; Tiledata RAM
+  ld    [hl],b
+  inc   l;$52
+  ld    [hl],c
+  inc   l;$53
+  ld    [hl],d
+  inc   l;$54
+  ld    [hl],e
+  inc   l;$55
+  ld    a,$12       ; $130 bytes / $10 - 1 = $12
+  ld    [hl],a      ; start DMA transfer
   ret
 
 LoadMap;Attributes, then Indices
   ld    hl,$ff4f    ; $ff4f=VRAM Bank
-  ld    de,$9800
   ld    bc,MapAttributes
+  ld    de,$9800
   ld    a,1
   ld    [hl+],a     ; VRAM Bank 1
   inc   l           ; $ff51-$ff54: DMA srcHI, srcLO, dstHI, dstLO

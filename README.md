@@ -22,8 +22,6 @@ Given a 24 bit color `RGB`, a 15 bit color `rgb` can be derived:
 
 ## Topics to look into
 
-Currently, nothing is transferred through DMA.
-
 Time-critical code that relies on dynamic data might be copied to RAM
 with the dynamic parts hardcoded into the instructions. The code can
 then be executed directly from RAM. For example, palette changes during
