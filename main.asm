@@ -12,17 +12,19 @@ section "V-Blank", rom0[$40]
   reti
 
 section "LCD Status", rom0[$48] ; LYC=LY ($ff45=$ff44) interrupt, for now
-  jp    RefreshPalette
+  jp    ScanlineLookup
 
 section "Program", rom0[$150]
 Main
   call  DisableLCD
   ld    a,%00000011
   ldh   [$ff],a     ; enable V-Blank and LCD STAT interrupt
-  ld    a,%01000000
-  ldh   [$41],a     ; enable LYC=LY interrupt
-  ld    a,$03       ; interrupt at line $03
-  ldh   [$45],a
+  ld    a,%00001000
+  ldh   [$41],a
+  ;ld    a,%01000000
+  ;ldh   [$41],a     ; enable LYC=LY interrupt
+  ;ld    a,$03       ; interrupt at line $03
+  ;ldh   [$45],a
   call  LoadTiles
   call  LoadMap
   call  LoadPalettes
@@ -127,6 +129,37 @@ EnableLCD
   ld    hl,$ff40
   set   7,[hl]
   ret
+
+ScanlineLookup
+  ld    b,3;= sizeof(jp a16)
+  ldh   a,[$44]     ; LY
+  ld    d,0
+  ld    e,a
+  ld    hl,ScanlineTable
+.while;b > 0
+  add   de          ; hl += LY
+  dec   b
+  jr    nz,.while   ; hl = 3 × LY
+  ld    de,$ff68    ; palette index register
+  jp    hl
+
+ScanlineTable
+  rept 3 * 3        ; 3 scanlines × sizeof(jp a16)
+  reti
+  endr
+  jp Scanline3
+  rept 150 * 3      ; fill out remaining entries with returns
+  reti
+  endr
+
+Scanline3
+  ld    hl,$ff69    ; palette register
+  ld    a,%10001100
+  ld    [de],a
+  ld    [hl],%10100110 ; #302830
+  ld    [hl],%00011000
+  ; repeat 4 above per color
+  reti
 
 section "Palette data", romx,bank[1]
 PaletteData
