@@ -26,7 +26,10 @@ func main() {
   if R * 8 != r || G * 8 != g || B * 8 != b {
     Printf("  dw    %%%016b ; #%x%x%x (from #%02x%02x%02x)\n",
       rgb, R * 8, G * 8, B * 8, r, g, b)
+    Printf("  db    %%%08b, %%%08b ; #%x%x%x (from #%02x%02x%02x)\n",
+      rgb >> 8, rgb & 0xff, R * 8, G * 8, B * 8, r, g, b)
     return
   }
   Printf("  dw    %%%016b ; #%x%x%x\n", rgb, r, g, b)
+  Printf("  db    %%%08b, %%%08b ; #%x%x%x\n", rgb & 0xff, rgb >> 8, r, g, b)
 }
