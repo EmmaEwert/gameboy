@@ -20,7 +20,7 @@ Main
   ld    a,%00000011
   ldh   [$ff],a     ; enable V-Blank and LCD STAT interrupt
   ld    a,%00001000
-  ldh   [$41],a
+  ldh   [$41],a     ; enable H-Blank interrupt
   ;ld    a,%01000000
   ;ldh   [$41],a     ; enable LYC=LY interrupt
   ;ld    a,$03       ; interrupt at line $03
@@ -144,21 +144,91 @@ ScanlineLookup
   jp    hl
 
 ScanlineTable
-  rept 3 * 3        ; 3 scanlines × sizeof(jp a16)
-  reti
-  endr
-  jp Scanline3
+  jp    Scanline
+  jp    Scanline
+  jp    Scanline
+  jp    Scanline3
+  jp    Scanline
+  jp    Scanline
+  jp    Scanline
+  jp    Scanline7
+  jp    Scanline8
+  jp    Scanline
+  jp    Scanline
+  jp    Scanline11
+  jp    Scanline12
+  jp    Scanline13
+  jp    Scanline14
   rept 150 * 3      ; fill out remaining entries with returns
   reti
   endr
 
+Scanline
+  reti
+
 Scanline3
-  ld    hl,$ff69    ; palette register
-  ld    a,%10001100
+  ld    hl,$ff69        ; palette register
+  ld    a,%10001100     ; palette 1, color 2, byte 0
   ld    [de],a
-  ld    [hl],%10100110 ; #302830
+  ld    [hl],%10100110  ; #302830
   ld    [hl],%00011000
-  ; repeat 4 above per color
+  ; repeat 4 above per color (or 2 above if directly next color)
+  reti
+
+Scanline7
+  ld    hl,$ff69
+  ld    a,%10001100     ; 1:2:0
+  ld    [de],a
+  ld    [hl],%10001101  ; #686078
+  ld    [hl],%00111101
+
+  ;ld    a,%10010100     ; 2:2:0
+  ;ld    [de],a
+  ;ld    [hl],%00101010  ; #504858
+  ;ld    [hl],%00101101
+  ; can't actually make it here quick enough, it seems?
+  ;ld    [hl],%10100110  ; #302830
+  ;ld    [hl],%00011000
+  reti
+
+Scanline8
+  ld    hl,$ff69
+  ld    a,%10001100     ; 1:2:0
+  ld    [de],a
+  ld    [hl],%01101010  ; #505868
+  ld    [hl],%00110101
+  reti
+
+Scanline11
+  ld    hl,$ff69
+  ld    a,%10011110     ; 3:3:0
+  ld    [de],a
+  ld    [hl],%00101010  ; #504858
+  ld    [hl],%00101101
+  reti
+
+Scanline12
+  ld    hl,$ff69
+  ld    a,%10011110     ; 3:3:0
+  ld    [de],a
+  ld    [hl],%01101010  ; #505868
+  ld    [hl],%00110101
+  reti
+
+Scanline13
+  ld    hl,$ff69
+  ld    a,%10011110     ; 3:3:0
+  ld    [de],a
+  ld    [hl],%00101010  ; #504858
+  ld    [hl],%00101101
+  reti
+
+Scanline14
+  ld    hl,$ff69
+  ld    a,%10000110     ; 0:3:0
+  ld    [de],a
+  ld    [hl],%01101010  ; #505868
+  ld    [hl],%00110101
   reti
 
 section "Palette data", romx,bank[1]
@@ -177,16 +247,16 @@ PaletteData
   dw    %0010000011100111 ; #383840
   dw    %0001010010000101 ; #282028
   dw    %0001100010100110 ; #302830
-  dw    %0010110101100111 ; #385858
+  dw    %0010110100101010 ; #504858
 
   dw    %0100101001010000 ; #809090
   dw    %0011110111101110 ; #707878
   dw    %0011110110001101 ; #686078
-  dw    %0010110100101010 ; #504858
+  dw    %0011010101101010 ; #505868
 
-  dw    %0010110101100111 ; #385858
-  dw    %0001010010000101 ; #282028
   dw    %0010010100100110 ; #304848
+  dw    %0001010010000101 ; #282028
+  dw    %0010110101100111 ; #385858
   dw    %0001100011000100 ; #203030
 
   dw    0,0,0,0 ; Align to $10 boundary for DMA transfer
@@ -204,8 +274,8 @@ MapAttributes
                     ; row 0
   db    %00000000,%00000000,%00000000,%00000001; 0- 3
   db    %00000001,%00000010,%00000010,%00000010; 4- 7
-  db    %00000010,%00000010,%00000010,%00000010; 8-11
-  db    %00100010,%00000010,%00000010,%00000010;12-15
+  db    %00000010,%00000010,%00000010,%00000100; 8-11
+  db    %00100100,%00000010,%00000010,%00000010;12-15
   db    %00000010,%00000010,%00000010,%00000010;16-19
   dw    0,0,0,0,0,0 ; row 1
   db    %00000000,%00000011,%00000001,%00000001; 0- 3
@@ -296,7 +366,7 @@ TileData
   dw    `11111111
   dw    `11111111
   dw    `11111111
-  dw    `11111133
+  dw    `11111122
 
   dw    `11111112   ; 09
   dw    `11111111
@@ -330,7 +400,7 @@ TileData
   dw    `11111222
   dw    `11112223
   dw    `11122223
-  dw    `00122233
+  dw    `00122233   ; should be 00122234
   dw    `00022233
   dw    `00022333
 
@@ -352,40 +422,40 @@ TileData
   dw    `10000111
   dw    `00000011
 
-  dw    `20003300   ; 14
-  dw    `20003330
-  dw    `00003330
-  dw    `00033133
-  dw    `00033113
-  dw    `00033111
-  dw    `00033111
-  dw    `00033111
+  dw    `30002200   ; 14
+  dw    `30002220
+  dw    `00002220
+  dw    `00022122
+  dw    `00022112
+  dw    `00022111
+  dw    `00022111
+  dw    `00022111
 
-  dw    `03331111   ; 15
-  dw    `03311111
-  dw    `03311111
-  dw    `33311111
-  dw    `33311111
-  dw    `33111111
-  dw    `33111111
+  dw    `02221111   ; 15
+  dw    `02211111
+  dw    `02211111
+  dw    `22211111
+  dw    `22211111
+  dw    `22111111
+  dw    `22111111
   dw    `11111111
 
-  dw    `11111000   ; 16, 16h
-  dw    `11111002
-  dw    `11111022
-  dw    `11110022
-  dw    `11110222
-  dw    `11100233
-  dw    `11102233
-  dw    `11002333
+  dw    `11111222   ; 16, 16h
+  dw    `11111220
+  dw    `11111200
+  dw    `11112200
+  dw    `11112000
+  dw    `11122033
+  dw    `11120033
+  dw    `11220333
 
   dw    `11111111   ; 17
   dw    `11111111
   dw    `11111111
-  dw    `11111131
-  dw    `11111331
-  dw    `11111333
-  dw    `11111333
-  dw    `11113333
+  dw    `11111121
+  dw    `11111221
+  dw    `11111222
+  dw    `11111222
+  dw    `11112222
 
 ; vim:syn=rgbasm
