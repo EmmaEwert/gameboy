@@ -62,17 +62,26 @@ rendering.
 A complete scanline cycle takes 456 cycles, so H-Blank + OAM read (where
 palettes can be written to) continuously last **281-287 cycles**.
 
-A single-color palette write time of 36 cycles, this allows 7 palette
-color changes per scanline (252 cycles), with 29-35 cycles to spare
-before VRAM read.
+A single-color palette write time of 40 cycles, this allows 7 palette
+color changes per scanline (280 cycles), with 1-7 cycles to spare
+before VRAM becomes inaccessible.
 
 ```asm
-; bc = $ff45, hl = $ff68, de = $ff69
-ld [hl],index   ; 12 cycles, hardcoded index
-ld [de],colorLO ; 12 cycles, hardcoded colorLO
-ld [de],colorHI ; 12 cycles, hardcoded colorHI
-                ;=36 cycles
+; c = $68, hl = $ff69
+ld a,index      ; 8 cycles, hardcoded index
+ld [c],a        ; 8 cycles
+ld [hl],colorLO ; 12 cycles, hardcoded colorLO
+ld [hl],colorHI ; 12 cycles, hardcoded colorHI
+                ;=40 cycles
 ```
+
+VRAM access doesn't need to be available for `ld a,index` of the first
+color.
+
+Additionally, the first two instructions can be skipped for consecutive
+colors. As well, if registers `b`, `d`, `e`, and `f` contain indices set
+before VRAM access, the 4 cycle `ld a,r` instructions can be used
+instead of the 8 cycle `ld a,index` for the second through fifth index.
 
 During VRAM read, the next LYC can be set from hardcoded RAM with
 `ld [bc],lyc`, assuming `bc = $ff45`.
