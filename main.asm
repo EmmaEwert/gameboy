@@ -154,8 +154,8 @@ ScanlineTable
   jp    Scanline
   jp    Scanline
   jp    Scanline
-  rept 150 * 3      ; fill out remaining entries with returns
-  reti
+  rept 150      ; fill out remaining entries with returns
+  jp    Scanline
   endr
 
 Scanline
