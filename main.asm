@@ -47,7 +47,7 @@ LoadTiles
   inc   l;$54
   ld    [hl],e
   inc   l;$55
-  ld    a,$12       ; $130 bytes / $10 - 1 = $12
+  ld    a,$1a       ; ($1a + 1) * $10 = $1b0 bytes = $1b tiles
   ld    [hl],a      ; start DMA transfer
   ret
 
@@ -66,21 +66,21 @@ LoadMap;Attributes, then Indices
   inc   l;$54
   ld    [hl],e
   inc   l;$55       ; $ff55.7 = mode (0: general purpose, 1: H-Blank)
-  ld    a,3         ; $20 + $14 attributes, ceil($34,$10) = $40, $40 / $10 - 1 = 3
+  ld    a,5         ; $20 + $20 + $14 attributes, ceil($54,$10) = $60, $60 / $10 - 1 = 5
   ld    [hl],a      ; $ff55.0-6 = bytes / $10 - 1, write = start DMA transfer
   ld    bc,MapIndices
   xor   a
   ld    [$ff4f],a   ; VRAM Bank 0
   ld    l,$51
   ld    [hl],b
-  inc   l;$51
-  ld    [hl],c
   inc   l;$52
-  ld    [hl],d
+  ld    [hl],c
   inc   l;$53
+  ld    [hl],d
+  inc   l;$54
   ld    [hl],e
   inc   l;$55
-  ld    a,3
+  ld    a,5
   ld    [hl],a      ; start DMA transfer
   ret
 
@@ -97,23 +97,6 @@ LoadPalettes
   dec   b
   jr    nz,.while
   ret
-
-RefreshPalette
-  ld    c,$68
-  ld    a,%10001100
-  ld    [c],a
-  inc   c
-  ld    hl,$ff41
-  xor   a
-  ld    de,%0001100010100110
-.wait
-  bit   1,[hl]
-  jr    nz,.wait
-  ld    a,e
-  ld    [c],a
-  ld    a,d
-  ld    [c],a
-  reti
 
 DisableLCD
   ld    bc,$9044
@@ -144,6 +127,7 @@ ScanlineLookup
   jp    hl
 
 ScanlineTable
+  ; row 0, 0-7
   jp    Scanline
   jp    Scanline
   jp    Scanline
@@ -152,6 +136,7 @@ ScanlineTable
   jp    Scanline
   jp    Scanline
   jp    Scanline7
+  ; row 1, 8-15
   jp    Scanline8
   jp    Scanline
   jp    Scanline
@@ -159,6 +144,16 @@ ScanlineTable
   jp    Scanline12
   jp    Scanline13
   jp    Scanline14
+  jp    Scanline
+  ; row 2, 16-23
+  jp    Scanline16
+  jp    Scanline
+  jp    Scanline
+  jp    Scanline19
+  jp    Scanline
+  jp    Scanline
+  jp    Scanline
+  jp    Scanline
   rept 150 * 3      ; fill out remaining entries with returns
   reti
   endr
@@ -231,6 +226,22 @@ Scanline14
   ld    [hl],%00110101
   reti
 
+Scanline16
+  ld    hl,$ff69
+  ld    a,%10000010     ; 0:1:0
+  ld    [de],a
+  ld    [hl],%00001000  ; #404050
+  ld    [hl],%00101001
+  reti
+
+Scanline19
+  ld    hl,$ff69
+  ld    a,%10000000     ; 0:0:0
+  ld    [de],a
+  ld    [hl],%11100111  ; #383840
+  ld    [hl],%00100000
+  reti
+
 section "Palette data", romx,bank[1]
 PaletteData
         ; BBBBBGGGGGRRRRR
@@ -267,10 +278,12 @@ MapIndices
   db    $00,$01,$02,$03,$04,$05,$06,$07,$07,$07,$07,$08,$08,$07,$07,$07,$07,$07,$09,$0a;$0a>
   dw    0,0,0,0,0,0
   db    $0b,$0c,$0d,$0e,$0f,$10,$08,$07,$07,$07,$07,$11,$11,$07,$07,$07,$07,$07,$07,$12;$12>
+  dw    0,0,0,0,0,0
+  db    $13,$14,$15,$16,$17,$10,$08,$07,$07,$07,$18,$19,$19,$18,$07,$07,$07,$07,$07,$1a;$1a>
   dw    0,0,0,0,0,0 ; Align to $10 boundary for DMA transfer
 
 section "Map tile attributes", romx,bank[1]
-MapAttributes
+MapAttributes;bits: 7 BG-to-OAM, 6 v-flip, 5 h-flip, 3 VRAM bank number, 2-0 palette
                     ; row 0
   db    %00000000,%00000000,%00000000,%00000001; 0- 3
   db    %00000001,%00000010,%00000010,%00000010; 4- 7
@@ -283,7 +296,13 @@ MapAttributes
   db    %00000010,%00000010,%00000010,%00000100; 8-11
   db    %00100100,%00000010,%00000010,%00000010;12-15
   db    %00000010,%00000010,%00000010,%00000010;16-19
-  dw    0,0,0,0,0,0 ; row 2, align to $10 boundary for DMA transfer
+  dw    0,0,0,0,0,0 ; row 2
+  db    %00000000,%00000011,%00000010,%00000010; 0- 3
+  db    %00000010,%00000010,%01100010,%00000010; 4- 7
+  db    %00000010,%00000010,%00000100,%00000100; 8-11
+  db    %00100100,%00100100,%00000010,%00000010;12-15
+  db    %00000010,%00000010,%00000010,%00000010;16-19
+  dw    0,0,0,0,0,0 ; row 3, align to $10 boundary for DMA transfer
 
 section "Tile data", romx,bank[1]
 TileData
@@ -350,7 +369,7 @@ TileData
   dw    `12221111
   dw    `22221111
 
-  dw    `11111111   ; 07, 17
+  dw    `11111111   ; 07, 17, 27
   dw    `11111111
   dw    `11111111
   dw    `11111111
@@ -400,7 +419,7 @@ TileData
   dw    `11111222
   dw    `11112223
   dw    `11122223
-  dw    `00122233   ; should be 00122234
+  dw    `00122233   ; actually 00122234
   dw    `00022233
   dw    `00022333
 
@@ -457,5 +476,77 @@ TileData
   dw    `11111222
   dw    `11111222
   dw    `11112222
+
+  dw    `33200000   ; 20
+  dw    `13220000
+  dw    `13322000
+  dw    `13332200
+  dw    `10332222
+  dw    `00032222
+  dw    `00032211
+  dw    `00032111
+
+  dw    `00033333   ; 21
+  dw    `00213333   ; actually 00213334
+  dw    `00213333   ; actually 00213333
+  dw    `01223333   ; actually 01223333
+  dw    `11123330
+  dw    `11123300
+  dw    `11123000   ; actually 41123000
+  dw    `11123000   ; actually 41123005
+
+  dw    `33333333   ; 22
+  dw    `33333333
+  dw    `33333333
+  dw    `33333330
+  dw    `33333300
+  dw    `33333300
+  dw    `33333000
+  dw    `33333000
+
+  dw    `00020000   ; 23
+  dw    `00022000
+  dw    `00022000
+  dw    `00222220
+  dw    `00222220
+  dw    `00222220
+  dw    `00200222
+  dw    `00000222
+
+  dw    `00022111   ; 24
+  dw    `00222111
+  dw    `00221111
+  dw    `02221111
+  dw    `02221111
+  dw    `02211111
+  dw    `22211111
+  dw    `22211111
+
+  dw    `11111111   ; 25, 25h
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111111
+  dw    `11111110
+  dw    `11111100
+  dw    `11111000
+
+  dw    `11200333   ; 26, 26h
+  dw    `12003333
+  dw    `12003333
+  dw    `20033333
+  dw    `00033333
+  dw    `00333333
+  dw    `00333300
+  dw    `03333022
+
+  dw    `11122222   ; 27
+  dw    `11122222
+  dw    `11112222
+  dw    `11112222
+  dw    `11112222
+  dw    `11112222
+  dw    `11111222
+  dw    `11111112
 
 ; vim:syn=rgbasm
