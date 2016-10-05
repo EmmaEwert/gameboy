@@ -148,13 +148,13 @@ ScanlineTable
   ; row 2, 16-23
   jp    Scanline16
   jp    Scanline
-  jp    Scanline
+  jp    Scanline18
   jp    Scanline19
   jp    Scanline
+  jp    Scanline21
   jp    Scanline
   jp    Scanline
-  jp    Scanline
-  rept 150      ; fill out remaining entries with returns
+  rept 160-24      ; fill out remaining entries with returns
   jp    Scanline
   endr
 
@@ -232,6 +232,19 @@ Scanline16
   ld    [de],a
   ld    [hl],%00001000  ; #404050
   ld    [hl],%00101001
+
+  ld    a,%10011010     ; 3:1:0
+  ld    [de],a
+  ld    [hl],%01101010  ; #505868
+  ld    [hl],%00110101
+  reti
+
+Scanline18
+  ld    hl,$ff69
+  ld    a,%10000100     ; 0:2:0
+  ld    [de],a
+  ld    [hl],%11101110  ; #707878
+  ld    [hl],%00111101
   reti
 
 Scanline19
@@ -240,6 +253,19 @@ Scanline19
   ld    [de],a
   ld    [hl],%11100111  ; #383840
   ld    [hl],%00100000
+  reti
+
+Scanline21
+  ld    hl,$ff69
+  ld    a,%10000010     ; 0:1:0
+  ld    [de],a
+  ld    [hl],%01010000  ; #809090
+  ld    [hl],%01001010
+
+  ld    a,%10000110     ; 0:3:0
+  ld    [de],a
+  ld    [hl],%00101010  ; #504858
+  ld    [hl],%00101101
   reti
 
 section "Palette data", romx,bank[1]
