@@ -144,7 +144,7 @@ ScanlineTable
   jp    Scanline12
   jp    Scanline13
   jp    Scanline14
-  jp    Scanline
+  jp    Scanline15
   ; row 2, 16-23
   jp    Scanline16
   jp    Scanline
@@ -226,6 +226,13 @@ Scanline14
   ld    [hl],%00110101
   reti
 
+Scanline15
+  ld    hl,$ff69
+  ld    a,%10010110     ; 2:3:0
+  ld    [de],a
+  ld    [hl],%00001000  ; #404050
+  ld    [hl],%00101001
+
 Scanline16
   ld    hl,$ff69
   ld    a,%10000010     ; 0:1:0
@@ -233,6 +240,7 @@ Scanline16
   ld    [hl],%00001000  ; #404050
   ld    [hl],%00101001
 
+  ld    hl,$ff69
   ld    a,%10011010     ; 3:1:0
   ld    [de],a
   ld    [hl],%01101010  ; #505868
@@ -245,6 +253,11 @@ Scanline18
   ld    [de],a
   ld    [hl],%11101110  ; #707878
   ld    [hl],%00111101
+
+  ld    a,%10011010     ; 3:1:0
+  ld    [de],a
+  ld    [hl],%11101110  ; #707878
+  ld    [hl],%00111101
   reti
 
 Scanline19
@@ -253,6 +266,11 @@ Scanline19
   ld    [de],a
   ld    [hl],%11100111  ; #383840
   ld    [hl],%00100000
+
+  ld    a,%10011000     ; 3:0:0
+  ld    [de],a
+  ld    [hl],%00001000  ; #404050
+  ld    [hl],%00101001
   reti
 
 Scanline21
