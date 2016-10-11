@@ -1,8 +1,19 @@
 include "header.inc"
 
+section "V-Blank", rom0[$40]
+  call LoadPalettes
+  reti
+
+section "LCD Status", rom0[$48] ; H-Blank interrupt, for now
+  jp    ScanlineLookup
+
 section "Program", rom0[$150]
 Main
   call  DisableLCD
+  ld    a,%00000011
+  ldh   [$ff],a     ; enable V-Blank and LCD STAT interrupt
+  ld    a,%00001000
+  ldh   [$41],a     ; enable H-Blank interrupt
   call  LoadTiles
   call  LoadMap
   call  LoadPalettes
@@ -44,7 +55,8 @@ LoadMap;Attributes, then Indices
   inc   l;$54
   ld    [hl],e
   inc   l;$55       ; $ff55.7 = mode (0: general purpose, 1: H-Blank)
-  ld    a,$f        ; $20 * 8 attributes, ceil($100,$10) = $100, $100 / $10 - 1 = $f
+  ; $19 = $20 * 5 empties + $20 * 8 attributes, ceil($1a0,$10) = $1a0, $1a0 / $10 - 1
+  ld    a,$19
   ld    [hl],a      ; $ff55.0-6 = bytes / $10 - 1, write = start DMA transfer
   ld    bc,MapIndices
   xor   a
@@ -58,35 +70,8 @@ LoadMap;Attributes, then Indices
   inc   l;$54
   ld    [hl],e
   inc   l;$55
-  ld    a,$f
+  ld    a,$19
   ld    [hl],a      ; start DMA transfer
-  ret
-
-LoadPalettes
-  ld    c,$68
-  ld    a,%10000000
-  ld    [c],a
-  inc   c
-
-  ld    a,%11111111;#ffffff
-  ld    [c],a
-  ld    a,%01111111
-  ld    [c],a
-
-  ld    a,%00101110;#70c8f8
-  ld    [c],a
-  ld    a,%01111111
-  ld    [c],a
-
-  ld    a,%11100111;#3878a0
-  ld    [c],a
-  ld    a,%01010001
-  ld    [c],a
-
-  ld    a,%10000010;#102028
-  ld    [c],a
-  ld    a,%00010100
-  ld    [c],a
   ret
 
 DisableLCD
@@ -108,35 +93,7 @@ section "Tile data", romx,bank[1]
 TileData
 incbin "lapras.2bpp"
 
-section "Map tile indices", romx,bank[1]
-MapIndices
-        ;0   1   2   3   4   5   6   7
-  db    $00,$01,$02,$03,$04,$05,$06,$07
-  dw    0,0,0,0,0,0,0,0,0,0,0,0;31
-  db    $08,$09,$0a,$0b,$0c,$0d,$0e,$0f
-  dw    0,0,0,0,0,0,0,0,0,0,0,0;31
-  db    $10,$11,$12,$13,$14,$15,$16,$17
-  dw    0,0,0,0,0,0,0,0,0,0,0,0;31
-  db    $18,$19,$1a,$1b,$1c,$1d,$1e,$1f
-  dw    0,0,0,0,0,0,0,0,0,0,0,0;31
-  db    $20,$21,$22,$23,$24,$25,$26,$27
-  dw    0,0,0,0,0,0,0,0,0,0,0,0;31
-  db    $28,$29,$2a,$2b,$2c,$2d,$2e,$2f
-  dw    0,0,0,0,0,0,0,0,0,0,0,0;31
-  db    $30,$31,$32,$33,$34,$35,$36,$37
-  dw    0,0,0,0,0,0,0,0,0,0,0,0;31
-  db    $38,$39,$3a,$3b,$3c,$3d,$3e,$3f
-  dw    0,0,0,0,0,0,0,0,0,0,0,0;31
-
-section "Map tile attributes", romx,bank[1]
-MapAttributes;bits: 7 BG-to-OAM, 6 v-flip, 5 h-flip, 3 VRAM bank number, 2-0 palette
-  dw    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;row 0
-  dw    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;row 1
-  dw    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;row 2
-  dw    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;row 3
-  dw    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;row 4
-  dw    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;row 5
-  dw    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;row 6
-  dw    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;row 7
+include "map.asm"
+include "palette.asm"
 
 ; vim:syn=rgbasm

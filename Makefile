@@ -11,7 +11,7 @@ lapras.gb: lapras/main.obj
 	rgblink -olapras.gb lapras/main.obj
 	rgbfix -v lapras.gb
 
-lapras/main.obj: lapras/main.asm lapras/lapras.2bpp
+lapras/main.obj: lapras/main.asm lapras/map.asm lapras/palette.asm lapras/header.inc lapras/lapras.2bpp
 	rgbasm -ilapras/ -olapras/main.obj -h lapras/main.asm
 
 lapras/lapras.2bpp: lapras/lapras.png
