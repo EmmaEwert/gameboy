@@ -1,4 +1,4 @@
-all: den.gb lapras.gb palette still
+all: scanlines.gb den.gb lapras.gb palette still
 
 den.gb: dragons-den/main.obj
 	rgblink -oden.gb dragons-den/main.obj
@@ -24,4 +24,4 @@ still: tools/still.go
 	go build tools/still.go
 
 clean:
-	rm dragons-den/main.obj den.gb lapras/main.obj lapras/lapras.2bpp lapras.gb palette still
+	rm dragons-den/main.obj den.gb lapras/main.obj lapras.gb palette still
