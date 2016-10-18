@@ -45,8 +45,6 @@ section "Header", rom0[$0100]
 
 section "Main", rom0[$0150]
 Main:           call  Setup
-                ld    hl, $0000
-                push  hl
                 jp    Scanline
 .update:        halt
                 nop
@@ -55,16 +53,16 @@ Main:           call  Setup
 
 
 Setup:
-DisableLCD:     WaitForLY144;┌──┬LCD Control register
+.disableLCD:    WaitForLY144;┌──┬LCD Control register
                 ld    hl,   $ff40;┌LCD Display Enabled?
                 res               7, [hl]
 ;                          ┌Prepare Speed Switch, CGB Mode Only
 ;                          ├──┐ ┌Current Speed (Read)
-SwitchSpeed:    ld    hl, $ff4d;│      ┌Prepare Speed Switch?
+.switchSpeed:   ld    hl, $ff4d;│      ┌Prepare Speed Switch?
                 ld    [hl],    %00000001
                 stop
 TILES set 1
-WriteTiles:     ld    hl,$ff51
+.writeTiles:    ld    hl,$ff51
                 ld    [hl],Tiles/$100
                 inc   l   ;$52
                 ld    [hl],Tiles%$100
@@ -74,7 +72,7 @@ WriteTiles:     ld    hl,$ff51
                 ld    [hl],$00
                 inc   l   ;$55
                 ld    [hl],(TILES-1)
-WriteMap:       ld    hl, $ff4f
+.writeMap:      ld    hl, $ff4f
                 ld    [hl], 1
                 ld    hl, $ff51
                 ld    [hl],Map/$100
@@ -89,15 +87,12 @@ WriteMap:       ld    hl, $ff4f
                 ld    hl, $ff4f
                 ld    [hl], 0
 ;                          ┌──┬LCD Control
-EnableLCD:      ld    hl, $ff40;┌LCD Display Enable
+.enableLCD:     ld    hl, $ff40;┌LCD Display Enable
                 set             7, [hl]
-EnableInterrupts:;         ┌──┬LCDC Status
+.enableInterrupts:;        ┌──┬LCDC Status
                 ld    hl, $ff41; ┌Mode 0 H-Blank Interrupt Enabled
                 ld    [hl], %00001000
                 reti
-
-
-
 
 
 
@@ -150,14 +145,9 @@ blue            set   (blue + 1)
 
 
 section "Data", romx,bank[1]
-Tiles:          dw `00112233
+Tiles:          rept $08
                 dw `00112233
-                dw `00112233
-                dw `00112233
-                dw `00112233
-                dw `00112233
-                dw `00112233
-                dw `00112233
+                endr
 
 Map:            rept  $20
                 db    $00,$01,$02,$03,$04,$05,$06,$07
