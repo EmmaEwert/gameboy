@@ -1,0 +1,118 @@
+section "Cartridge Header", rom0[$0100]
+; ┌────────┬Entry point, 4 bytes──┴──┘
+  di;      │
+  jp    Main
+;┌Nintendo Logo, required by most Game Boys       CGB only requires first half┐
+;└───────┬────────────────────────────────────────────────────────────────────┤
+  dw    $ceed,$6666,$cc0d,$000b,$0373,$0083,$000c,$000d,$0008,$111f,$8889,$000e
+  dw    $dccc,$6ee6,$dddd,$d999,$bbbb,$6763,$6e0e,$eccc,$dddc,$999f,$bbb9,$333e
+;          Title┐┌Manufacturer Code, uppercase ASCII, 4 bytes, old title
+;Uppercase ASCII┤│      ┌CGB Flag
+;┌New cartridges││      ├$80: CGB functions, also works on old Game Boys
+;│  ┌Old CGB    ││      ├$c0: CGB only, physically the same as $80
+;├┐ ├┐ ┌┬Old DMG││      ├$84: Non-CGB colorized by palette at special ROM
+;11/15/16 bytes─┤│      │   ┌New Licensee Code, ASCII, 2 bytes, publisher
+;     ┌─────────┤├──┐   ├┐  ├┐  ┌SGB Flag, 0: No SGB, 3: SGB Support
+  db "SCANLINES  EMMA",$80,"LC",0
+;┌Cartridge Type
+;│         ROM MBC1 MBC2    MBC3    MBC4 MBC5    MBC6 MBC7 MMM01 HuC   Tama5 Cam
+;│ROM only $00 $01  $05┌$06┌$0f┐$11 $15  $19┌$1c $20       $0b   3:$fe $fc   $fd
+;│RAM      $08 $02     │   │$12│    $16  $1a├$1d           $0c
+;│RAM+Batt $09 $03     │   │$10┤$13 $17  $1b├$1e     ┌$22┐ $0d   1:$ff
+;└────┬┐        Battery┴───┘   └Timer Rumble┴────────┘   └Sensor
+  db $00
+;     ┌ROM Size, 16 KiB per bank
+;     │$00:   32 KiB
+;     ├$01:┌──64 KiB,   4 banks┌RAM Size, 8 KiB per bank
+;     ├$02:├─128 KiB,   8 banks├0:   0
+;     ├$03:│ 256 KiB,  16 banks├1:   2 KiB
+;     ├$04:│ 512 KiB,  32 banks├2:   8 KiB
+;     ├$05:│1024 KiB,  64 banks├3:  32 KiB,  4 banks
+;     ├$06:│2048 KiB, 128 banks├4: 128 KiB, 16 banks
+;     ├$07:│4096 KiB, 256 banks├5:  64 KiB,  8 banks
+;     ├$08:│8192 KiB, 512 banks│ ┌Destination, 0: Japan, 1: Other region
+;     ├$52:│1152 KiB,  72 banks│ │  ┌Old Licensee Code, $33: Use new license
+;     ├$53:│1280 KiB,  80 banks│ │  │  ┌Mask ROM Version
+;     ├$54:│1536 KiB,  96 banks│ │  │  │ ┌Header Checksum
+;     ├┐ 63┴125 on MBC1        │ │  ├┐ │ │ ┌─┬Global Checksum
+  db $00,                      0,0,$33,0,0,0,0;rom0[$014f]
+
+
+
+VideoDisplay:
+VideoIORegisters:
+;                               ┌LCD Display Enabled?
+;                               ├ONLY during V-Blank, to avoid hardware damage
+;                               │┌Window Tile Map Display Select
+;                               │├0: 9800-9bff
+;                               │├1: 9c00-9fff
+;                               ││┌Window Display Enable
+;                               │││┌BG & Window Tile Data Select
+;                               │││├0: 8800-97ff
+;                               │││├1: 8000-8fff
+;                               ││││┌BG Tile Map Display Select
+;                               ││││├0: 9800-9bff
+;                               ││││├1: 9c00-9fff
+;                               │││││┌OBJ (Sprite) Size, 8×8 or 8×16
+;                               ││││││┌OBJ (Sprite) Display Enabled?
+;                               │││││││┌GB, GBP and SGB: BG Display
+;         ┌────────────────┬──┐ │││││││├CGB: BG and Window Master Priority
+LCDControl:     ld    hl, $ff40;│││││││├CGB in non-CGB: BG and Window Display
+                ld    [hl],    %00000000
+
+
+
+;                               ┌LYC=LY Coincidence Interrupt Enabled?
+;                               │┌Mode 2 OAM Interrupt Enabled? (No OAM during)
+;                               ││┌Mode 1 V-Blank Interrupt Enabled?
+;                               │││┌Mode 0 H-Blank Interrupt Enabled?
+;                               ││││┌Coincidence Flag, LYC == LY
+;       ┌──────────────────┬──┐ │││││┌Mode Flag, 3: no OAM, VRAM, or palette
+LCDStatus:      ld    hl, $ff41;│││││├┐
+                ld    [hl],   %00001000
+
+; LCD Status Interrupt timeline
+;‥┬LY$00──────────────┬LY$01─────────┬‥┬LY$8f───────┬LY$90──┬LY$91┬‥┬LY$99┬‥
+;‥│         H-Blank┐  │    H-Blank┐  │‥│            │VBlank┐│     │‥│     │‥
+;‥│ ┌$99   $00┐    │  │$01┐       │  │‥│$8f┐        │$90┬──┘│ ┌$91│‥│     │‥
+;‥│2│224│40│54│33│4│95│2│6│34│87│4│95│‥│2│6│34│87│99│2│6│220│8│220│‥│  4  │‥
+;─┴1────┴2─┴3────┴0─────┴2───┴3─┴0────┴0─┴2───┴3─┴0─┴1────────────────────┴─
+; TODO: OAM interrupt
+; TODO: Idealised cycle times, noting delay from interrupt to vector jump
+
+
+
+;          ┌───────────────┬──┐ ┌LYC == LY:
+LineYCompare    ld    hl, $ff45;├┐Set LCD Status Coincidence Flag, LCD interrupt
+                ld    [hl],    $99
+
+
+
+;                               ┌Joypad
+;                               │┌Serial
+;                               ││┌Timer
+;             ┌────────────┬──┐ │││┌LCD STAT
+InterruptEnable:ld    hl, $ffff;││││┌V-Blank
+                ld    [hl], %00000000
+
+;                               ┌Joypad        Interrupt Request
+;                               │┌Serial       Interrupt Request
+;                               ││┌Timer       Interrupt Request
+;           ┌──────────────┬──┐ │││┌LCD Status Interrupt Request
+InterruptFlag:  ld    hl, $ff0f;││││┌V-Blank   Interrupt Request
+                ld    [hl], %00000000 ;LCD Status only requests interrupts
+                                      ;enabled in LCD Status register $ff41
+
+
+
+;                         ┌LCD VRAM DMA Transfer
+;                         ├$51: DMA Source, High      $00 to $7f, $a0 to $df
+;                         ├$52: DMA Source, Low       $0- to $f-
+;                         ├$53: DMA Destination, High $80 to $9f
+;                         ├$54: DMA Destination, Low  $0- to $f-
+;                         ├$55: DMA Mode, Length, writing starts DMA Transfer
+;                         ├───┐ ┌Mode, 0: Immediate, 1: $10 bytes per H-Blank
+VRAMDMATransfer:ld    hl, $ff55;│┌─────┬Transfer Length = bytes / $10 - $01
+                ld    [hl],    %00000000
+
+; vim:ft=rgbasm et sts=2 sw=2
