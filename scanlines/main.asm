@@ -43,15 +43,74 @@ section "Header", rom0[$0100]
 
 
 
+section "LCD Status interrupt vector", rom0[$48]
+                call  Scanline
+                reti
+
+
 section "Main", rom0[$0150]
 Main:           call  Setup
-                jp    Scanline
 .update:        halt
                 nop
                 jr    .update
 
 
 
+section "Code", rom0
+Scanline:       ret
+
+
+
+if 0
+__Scanline_0:   WaitForLY144
+                ld    hl, $ff68
+                ld    [hl], %10100000
+                inc   l
+                rept  $10
+                ld    [hl], %00000000
+                ld    [hl], %00000000
+                endr
+                ld    a, %10000000
+                ld    c, $68
+green           set   $00
+blue            set   $00
+                rept  $8f
+                WaitForHBlank
+                ld    l,c
+                ld    [hl+],a
+red             set   $00
+                rept  $10
+color           set   red
+                ld    [hl], red & %00011111 + (green & %00000111) << 5
+                ld    [hl], (blue/4) << 2 + (green >> 3)
+red             set   red + 1
+                endr
+green           set   (green + 1) % $20
+blue            set   (blue + 1)
+                endr
+
+                WaitForLY144
+                ld    l,c
+                ld    [hl], %10100000
+                inc   l
+                rept  $10
+                ld    [hl], %00000000
+                ld    [hl], %10000000
+                endr
+                ld    a,%10000000
+                WaitForHBlank
+                ld    l,c
+                ld    [hl+],a
+                rept  $10
+                ld    [hl], e
+                ld    [hl], d
+                endr
+                jp    __Scanline_0
+endc
+
+
+
+section "Setup", rom0
 Setup:
 .disableLCD:    WaitForLY144;┌──┬LCD Control register
                 ld    hl,   $ff40;┌LCD Display Enabled?
@@ -93,54 +152,6 @@ TILES set 1
                 ld    hl, $ff41; ┌Mode 0 H-Blank Interrupt Enabled
                 ld    [hl], %00001000
                 reti
-
-
-
-section "New Scanline", rom0
-Scanline:       WaitForLY144
-                ld    hl, $ff68
-                ld    [hl], %10100000
-                inc   l
-                rept  $10
-                ld    [hl], %00000000
-                ld    [hl], %00000000
-                endr
-                ld    a, %10000000
-                ld    c, $68
-green           set   $00
-blue            set   $00
-                rept $8f
-                WaitForHBlank
-                ld    l,c
-                ld    [hl+],a
-red             set   $00
-                rept  $10
-color           set   red
-                ld    [hl], red & %00011111 + (green & %00000111) << 5
-                ld    [hl], (blue/4) << 2 + (green >> 3)
-red             set   red + 1
-                endr
-green           set   (green + 1) % $20
-blue            set   (blue + 1)
-                endr
-
-                WaitForLY144
-                ld    l,c
-                ld    [hl], %10100000
-                inc   l
-                rept  $10
-                ld    [hl], %00000000
-                ld    [hl], %10000000
-                endr
-                ld    a,%10000000
-                WaitForHBlank
-                ld    l,c
-                ld    [hl+],a
-                rept  $10
-                ld    [hl], e
-                ld    [hl], d
-                endr
-                jp    Scanline
 
 
 
