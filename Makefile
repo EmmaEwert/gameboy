@@ -31,4 +31,4 @@ still: tools/still.go
 	go build tools/still.go
 
 clean:
-	rm dragons-den/main.obj den.gb lapras/main.obj lapras.gb palette still
+	rm dragons-den/main.obj den.gb lapras/main.obj lapras.gb scanlines/main.obj scanlines.gb palette still
