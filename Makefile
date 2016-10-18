@@ -1,5 +1,12 @@
 all: scanlines.gb den.gb lapras.gb palette still
 
+scanlines.gb: scanlines/main.obj
+	rgblink -oscanlines.gb scanlines/main.obj
+	rgbfix -v scanlines.gb
+
+scanlines/main.obj: scanlines/main.asm
+	rgbasm -oscanlines/main.obj -h scanlines/main.asm
+
 den.gb: dragons-den/main.obj
 	rgblink -oden.gb dragons-den/main.obj
 	rgbfix -v den.gb
