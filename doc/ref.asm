@@ -115,4 +115,15 @@ InterruptFlag:  ld    hl, $ff0f;││││┌V-Blank   Interrupt Request
 VRAMDMATransfer:ld    hl, $ff55;│┌─────┬Transfer Length = bytes / $10 - $01
                 ld    [hl],    %00000000
 
+
+
+Emulator:
+;   ┌───────────┬──────────┐
+Debug:          ld    d, d;│
+                jr    .end;│
+                dw     $6464;┌Debug message
+                dw     $0000;├─────┐
+                db          "Message"
+.end:
+
 ; vim:ft=rgbasm et sts=2 sw=2
