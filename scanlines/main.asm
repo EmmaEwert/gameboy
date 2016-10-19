@@ -43,6 +43,12 @@ section "Header", rom0[$0100]
 
 
 
+section "V-Blank interrupt vector", rom0[$40]
+                call  SwapBuffer
+                reti
+
+
+
 section "LCD Status interrupt vector", rom0[$48]
                 call  Scanline
                 reti
@@ -57,63 +63,101 @@ Main:           call  Setup
 
 
 section "Code", rom0
-Scanline:       ret
+Scanline:
 
+                ld    hl, $ff68       ;6 cycles
+                ld    [hl], %10000000 ;6 cycles
+                ld    a, $69          ;4 cycles
+                ld    bc, %0000000011111111       ;6 cycles
+                ld    de, %0110001100011100       ;6 cycles
+                ;VRAM accessible after roughly 224 cycles
 
+;                          ┌──┬LCD Status
+                ld    hl, $ff41; ┌Mode 0 H-Blank interrupt enabled?
+                ld    [hl], %00001000
 
-if 0
-__Scanline_0:   WaitForLY144
-                ld    hl, $ff68
-                ld    [hl], %10100000
-                inc   l
-                rept  $10
-                ld    [hl], %00000000
-                ld    [hl], %00000000
-                endr
-                ld    a, %10000000
-                ld    c, $68
-green           set   $00
-blue            set   $00
-                rept  $8f
-                WaitForHBlank
-                ld    l,c
-                ld    [hl+],a
-red             set   $00
-                rept  $10
-color           set   red
-                ld    [hl], red & %00011111 + (green & %00000111) << 5
-                ld    [hl], (blue/4) << 2 + (green >> 3)
-red             set   red + 1
-                endr
-green           set   (green + 1) % $20
-blue            set   (blue + 1)
-                endr
+;                          ┌──┬Interrupt Flag
+                ld    hl, $ff0f;┌LCD Status
+.notHBlank      bit             1, [hl]
+                jr    Z, .notHBlank
+                ld    l, a
+                ld    a, %10000011
 
-                WaitForLY144
-                ld    l,c
-                ld    [hl], %10100000
-                inc   l
-                rept  $10
-                ld    [hl], %00000000
-                ld    [hl], %10000000
-                endr
-                ld    a,%10000000
-                WaitForHBlank
-                ld    l,c
-                ld    [hl+],a
-                rept  $10
-                ld    [hl], e
+color:          macro
+                if \1 == 0
+                ld    [hl], a
+                else if \1 == 1
+                ld    [hl], b
+                else if \1 == 2
+                ld    [hl], c
+                else if \1 == 3
                 ld    [hl], d
+                else if \1 == 4
+                ld    [hl], e
+                else if \1 == 5
+                ld    [hl], %011111000
+                else
+                ld    [hl], \2
+                endc
+                endc
+                endc
+                endc
+                endc
+                endc
+                endm
+
+                ;VRAM accessible for roughly 280 cycles
+hi              set   0
+                rept  6
+lo              set   0
+                rept  5
+                color lo
+                color hi
+lo              set   lo+1
                 endr
-                jp    __Scanline_0
-endc
+hi              set   hi+1
+                endr
+                ld    [hl], %00000000 ;6 cycles
+                ld    [hl], %00000000 ;6 cycles
+                rept  0;33
+                ld    [hl], b
+                ld    [hl], b
+                endr
+                rept  0;22
+                ld    [hl], %00000000 ;6 cycles
+                ld    [hl], %00000000 ;6 cycles
+                endr
+
+;                          ┌──┬LCD Status
+                ld    hl, $ff41;┌LYC=LY Coincidence interrupt enabled?
+;                               │  ┌Mode 0 H-Blank interrupt enabled?
+                ld    [hl],   %01000000
+
+;                          ┌──┬Interrupt Flag
+                ld    hl, $ff0f;┌LCD Status
+                res             1, [hl]
+                ret
+
+
+
+;                          ┌──┬Scroll X
+SwapBuffer:     ld    hl, $ff43;
+                ld    a, %00000001
+                xor   [hl]
+                ld    [hl], a
+;                          ┌──┬LCD Control
+                ld    hl, $ff40;┌BG Tile Map Display Select
+                ld    a,   %00001000
+                xor   [hl]
+                ld    [hl], a
+                ret
 
 
 
 section "Setup", rom0
 Setup:
 .disableLCD:    WaitForLY144;┌──┬LCD Control register
-                ld    hl,   $ff40;┌LCD Display Enabled?
+                ld    hl,   $ff40;┌LCD Display enabled?
                 res               7, [hl]
 ;                          ┌Prepare Speed Switch, CGB Mode Only
 ;                          ├──┐ ┌Current Speed (Read)
@@ -132,7 +176,7 @@ TILES set 1
                 inc   l   ;$55
                 ld    [hl],(TILES-1)
 .writeMap:      ld    hl, $ff4f
-                ld    [hl], 1
+                ld    [hl], 1; bank 0
                 ld    hl, $ff51
                 ld    [hl],Map/$100
                 inc   l   ;$52
@@ -143,14 +187,25 @@ TILES set 1
                 ld    [hl],$00
                 inc   l   ;$55
                 ld    [hl],($400/$10-1)
+                ld    l, $53
+                ld    [hl], $9c
+                ld    l, $55
+                ld    [hl],($400/$10-1)
                 ld    hl, $ff4f
-                ld    [hl], 0
+                ld    [hl], 0; bank 0
 ;                          ┌──┬LCD Control
-.enableLCD:     ld    hl, $ff40;┌LCD Display Enable
+.enableLCD:     ld    hl, $ff40;┌LCD Display enabled?
                 set             7, [hl]
-.enableInterrupts:;        ┌──┬LCDC Status
-                ld    hl, $ff41; ┌Mode 0 H-Blank Interrupt Enabled
-                ld    [hl], %00001000
+.enableInterrupts:;        ┌──┬LCD Status
+                ld    hl, $ff41;┌LYC=LY Coincidence interrupt enabled?
+                ld    [hl],   %01000000
+;                          ┌──┬LYC
+                ld    hl, $ff45;┌┬Set LCD Status LYC=LY Coincidence flag here
+                ld    [hl],    $01
+;                          ┌Interrupt Enable register
+;                          ├──┐;   ┌LCD Status interrupt enabled?
+                ld    hl, $ffff;   │┌V-Blank interrupt enabled?
+                ld    [hl], %00000011
                 reti
 
 
@@ -160,11 +215,15 @@ Tiles:          rept $08
                 dw `00112233
                 endr
 
-Map:            rept  $20
+Map:            rept  $80
                 db    $00,$01,$02,$03,$04,$05,$06,$07
-                db    $07,$07,$07,$07,$07,$07,$07,$07
-                db    $07,$07,$07,$07,$07,$07,$07,$07
-                db    $07,$07,$07,$07,$07,$07,$07,$07
+                endr
+
+MixMap:         rept  $20
+                db    $00,$00,$00,$00,$00,$02,$02,$02
+                db    $02,$02,$04,$04,$04,$04,$04,$06
+                db    $06,$06,$06,$06,$00,$00,$00,$00
+                db    $00,$00,$00,$00,$00,$00,$00,$00
                 endr
 
 ; vim:filetype=rgbasm expandtab softtabstop=2

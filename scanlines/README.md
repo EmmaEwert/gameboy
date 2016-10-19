@@ -56,24 +56,31 @@ With 144 scanlines, this gives a naive max colour count of:
 
 23 × 144 + 9 + 24 = 3'345 colours on screen.
 
+The *[$ff68] BG palette index* register must be set up before assigning colours,
+as well. This can be done without VRAM access.
+
+Because the cycles available during each mode vary slightly over time, it only
+seems effectively possible to change 22 palette entries per scanline.
+
 A few colour assignments can use pre-initialised registers a, b, c, d and e, as
 well. The `ld [hl], r` instruction takes 4 cycles instead of 6, so this might
-free up enough cycles for an additional colour assignment.
+free up enough cycles for an additional colour assignment, especially if the
+colours stored in registers are used more than once.
 
-However, the *[$ff68] BG palette index* register must be set up before assigning
-colours, as well.
+For example, if all colour changes used preset registers, it would be possible
+to change 33 colours per scanline.
 
-The fastest way to do this seems to be preloading the `a` register with the
-first colour index, the `hl` register with the *BG palette index* register
-address, and using the following instruction once VRAM is accessible:
+Considering the Game Boy Color has a 15 bit colour palette, and assuming we can
+use registers a, b, c, d and e for both the high byte and the low byte of the
+colour, this gives us 2 colour bytes, using any of 5 distinct register bytes:
 
-```asm
-ld    [hl+], a  ;4 cycles
-```
+25 few-cycles colour combinations that we have moderate control over, with
+enough free cycles left for another 5 colours that are a combination of any
+immediate byte and a register value, as well as one extra pure immediate colour,
+and an immediate `gggrrrrr` part of one more colour.
 
-This sets the first colour index, *and* loads the `hl` register with the
-*[$ff69] BG palette data* register address.
-
+This gives us 31½ new, somewhat controllable colours per scanline: 4'536 colours
+on screen.
 
 The Game Boy Color mixes the current and last frame, though. By changing the
 colours displayed each frame, this can drastically increase the number of
