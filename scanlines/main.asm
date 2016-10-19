@@ -144,10 +144,10 @@ hi              set   hi+1
                 ld    hl, $ff0f;┌LCD Status
                 res             1, [hl]
 aRegister       set   aRegister + 1
-bRegister       set   bRegister + 1
-cRegister       set   cRegister + 1
-dRegister       set   dRegister + 1
-eRegister       set   eRegister + 1
+bRegister       set   bRegister + 3
+cRegister       set   cRegister + 5
+dRegister       set   dRegister + 7
+eRegister       set   eRegister + 11
                 endr
                 ret
 
