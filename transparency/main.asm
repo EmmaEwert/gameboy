@@ -20,19 +20,113 @@ section "Header", rom0[$0100]
 
 
 section "Data", romx,bank[1]
+MAP             set   0
+Map:            rept  $0e
+                rept  $20
+                db    $00
+MAP             set   MAP+1
+                endr
+                endr
+                db    $80, $81, $82, $83
+MAP             set   MAP+4
+                rept  $20-$04
+                db    $00
+MAP             set   MAP+1
+                endr
+                db    $90, $91, $92, $93
+MAP             set   MAP+4
+                rept  $20-$04
+                db    $00
+MAP             set   MAP+1
+                endr
+                db    $a0, $a1, $a2, $a3
+MAP             set   MAP+4
+                rept  $20-$04
+                db    $00
+MAP             set   MAP+1
+                endr
+                db    $b0, $b1, $b2, $b3
+MAP             set   MAP+4
+                rept  $20-$04
+                db    $00
+MAP             set   MAP+1
+                endr
+
+MAP_ATTRIBUTES  set   0
+MapAttributes:  rept  $0e
+                rept  $20
+                db    $00
+MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+1
+                endr
+                endr
+                db    $02, $02, $02, $02
+MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+4
+                rept  $20-$04
+                db    $00
+MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+1
+                endr
+                db    $02, $02, $02, $02
+MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+4
+                rept  $20-$04
+                db    $00
+MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+1
+                endr
+                db    $02, $02, $02, $02
+MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+4
+                rept  $20-$04
+                db    $00
+MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+1
+                endr
+                db    $02, $02, $02, $02
+MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+4
+                rept  $20-$04
+                db    $00
+MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+1
+                endr
+
 WINDOW_ATTRIBUTES set 0
 WindowAttributes:
-                rept  $400
-                db    %10001001
+                db    $02, $02, $02, $02, $89, $89, $89, $89
+                db    $89, $89, $89, $89, $89, $89, $89, $89
+                db    $89, $89, $89, $89, $89, $89, $89, $89
+                db    $89, $89, $89, $89, $89, $89, $89, $89
+WINDOW_ATTRIBUTES set WINDOW_ATTRIBUTES+$20
+                db    $02, $02, $02, $02, $89, $89, $89, $89
+                db    $89, $89, $89, $89, $89, $89, $89, $89
+                db    $89, $89, $89, $89, $89, $89, $89, $89
+                db    $89, $89, $89, $89, $89, $89, $89, $89
+WINDOW_ATTRIBUTES set WINDOW_ATTRIBUTES+$20
+                db    $02, $02, $02, $02, $89, $89, $89, $89
+                db    $89, $89, $89, $89, $89, $89, $89, $89
+                db    $89, $89, $89, $89, $89, $89, $89, $89
+                db    $89, $89, $89, $89, $89, $89, $89, $89
+WINDOW_ATTRIBUTES set WINDOW_ATTRIBUTES+$20
+                db    $02, $02, $02, $02, $89, $89, $89, $89
+                db    $89, $89, $89, $89, $89, $89, $89, $89
+                db    $89, $89, $89, $89, $89, $89, $89, $89
+                db    $89, $89, $89, $89, $89, $89, $89, $89
+WINDOW_ATTRIBUTES set WINDOW_ATTRIBUTES+$20
+                rept  $400-WINDOW_ATTRIBUTES
+                db    %10001001;$89
 WINDOW_ATTRIBUTES set WINDOW_ATTRIBUTES+1
                 endr
 WINDOW_MAP      set   0
-WindowMap:      db    $40, $40, $40, $40, $00, $01, $02, $03
+WindowMap:      db    $80, $81, $82, $83, $00, $01, $02, $03
                 db    $40, $40, $40, $40, $40, $40, $40, $40
                 db    $40, $40, $40, $40, $40, $40, $40, $40
                 db    $40, $40, $40, $40, $40, $40, $40, $40
 WINDOW_MAP      set   WINDOW_MAP+$20
-                db    $40, $40, $40, $40, $10, $11, $12, $13
+                db    $90, $91, $92, $93, $10, $11, $12, $13
+                db    $40, $40, $40, $40, $40, $40, $40, $40
+                db    $40, $40, $40, $40, $40, $40, $40, $40
+                db    $40, $40, $40, $40, $40, $40, $40, $40
+WINDOW_MAP      set   WINDOW_MAP+$20
+                db    $a0, $a1, $a2, $a3, $40, $40, $40, $40
+                db    $40, $40, $40, $40, $40, $40, $40, $40
+                db    $40, $40, $40, $40, $40, $40, $40, $40
+                db    $40, $40, $40, $40, $40, $40, $40, $40
+WINDOW_MAP      set   WINDOW_MAP+$20
+                db    $b0, $b1, $b2, $b3, $40, $40, $40, $40
                 db    $40, $40, $40, $40, $40, $40, $40, $40
                 db    $40, $40, $40, $40, $40, $40, $40, $40
                 db    $40, $40, $40, $40, $40, $40, $40, $40
@@ -126,15 +220,32 @@ TEXT_TILES      set   TEXT_TILES+1
                 dw    `00000000
 TEXT_TILES      set   TEXT_TILES+1
 TILES           set   TILES+TEXT_TILES
+
 Sprites:
 incbin          "transparency/lyra.2bpp"
 SPRITES         set   $10
 
+section "Sprite Attributes", rom0[$0400]
+SpriteMap:      db    $80, $08, $80, %00000000
+                db    $80, $10, $81, %00000000
+                db    $80, $18, $82, %00000000
+                db    $80, $20, $83, %00000000
+                db    $88, $08, $90, %00000000
+                db    $88, $10, $91, %00000000
+                db    $88, $18, $92, %00000000
+                db    $88, $20, $93, %00000000
+                db    $90, $08, $a0, %00000000
+                db    $90, $10, $a1, %00000000
+                db    $90, $18, $a2, %00000000
+                db    $90, $20, $a3, %00000000
+                db    $98, $08, $b0, %00000000
+                db    $98, $10, $b1, %00000000
+                db    $98, $18, $b2, %00000000
+                db    $98, $20, $b3, %00000000
 
 
 
-
-section "V-Blank interrupt vector", rom0[$40]
+section "V-Blank interrupt vector", rom0[$0040]
                 call  SwapBuffer
                 reti
 
@@ -159,7 +270,14 @@ SwapBuffer:     ld    hl, $ff40;┌Window Display enabled?
 ;                          ┌──┬Window X Position minus 7
                 ld    hl, $ff4b
                 ld    [hl], $07
+
+                ;call  TransferOAM
                 ret
+
+
+
+section "OAM DMA Transfer", hram
+TransferOAM:    ds $0b
 
 
 
@@ -178,7 +296,7 @@ Setup:;                    ┌──┬LY
                 set             0, [hl]
                 stop
 ;                          ┌──┬Background Palette Index
-.setPalettes:   ld    hl, $ff68;┌Auto Increment?
+.mapPalettes:   ld    hl, $ff68;┌Auto Increment?
                 ld    [hl],    %10000000
 ;                          ┌──┬Background Palette Data
                 inc   l;  $ff69
@@ -198,6 +316,16 @@ Setup:;                    ┌──┬LY
                 ld    [hl], %01000010
                 ld    [hl], %11111111
                 ld    [hl], %01111111
+                ;Palette 2
+                ld    [hl], %01011111 ; #f8d0b8
+                ld    [hl], %01011111
+                ld    [hl], %10111111 ; #f86860
+                ld    [hl], %00110001
+                ld    [hl], %11010011 ; #987040
+                ld    [hl], %00100001
+                ld    [hl], %11111111 ; #f8f8f8
+                ld    [hl], %01111111
+
 .writeSprites:  ld    hl, $ff51
                 ld    [hl], (Sprites+$00)/$100
                 inc   l
@@ -238,6 +366,16 @@ Setup:;                    ┌──┬LY
                 ld    [hl], $00
                 inc   l
                 ld    [hl], SPRITES/4-1
+.writeMap:      ld    hl, $ff51
+                ld    [hl], Map/$100
+                inc   l
+                ld    [hl], Map%$100
+                inc   l
+                ld    [hl], $98
+                inc   l
+                ld    [hl], $00
+                inc   l
+                ld    [hl], (MAP/$10-1)
 ;                          ┌──┬LCD VRAM Bank
 .writeTextTiles:ld    hl, $ff4f;┌VRAM Bank = 1
                 set             0, [hl]
@@ -251,6 +389,17 @@ Setup:;                    ┌──┬LY
                 ld    [hl], $00
                 inc   l
                 ld    [hl], (TEXT_TILES-1)
+.writeMapAttributes:
+                ld    hl, $ff51
+                ld    [hl], MapAttributes/$100
+                inc   l
+                ld    [hl], MapAttributes%$100
+                inc   l
+                ld    [hl], $98
+                inc   l
+                ld    [hl], $00
+                inc   l
+                ld    [hl], (MAP/$10-1)
 .writeWindowAttributes:
                 ld    hl, $ff51
                 ld    [hl], WindowAttributes/$100
@@ -275,9 +424,19 @@ Setup:;                    ┌──┬LY
                 ld    [hl], $00
                 inc   l
                 ld    [hl], (WINDOW_MAP/$10-1)
+.writeOAMTransfer:
+                ld    hl, RAMTransferOAM
+                ld    de, TransferOAM
+                rept $0b
+                ld    a, [hl+]
+                ld    [de], a
+                inc   de
+                endr
 ;                          ┌──┬LCD Control
 .selectWindow:  ld    hl, $ff40;┌Window Tile Map Display Select = $9c00-$9fff
                 set             6, [hl]
+.enableSprites:;                ┌BG and Window Master Priority
+                set             1, [hl]
 ;                     ┌LCD Display enabled?
 .enableLCD:     set   7, [hl]
 .enableInterrupts:;        ┌──┬Interrupt Enable
@@ -285,6 +444,14 @@ Setup:;                    ┌──┬LY
                 set             0, [hl]
                 reti
 
+
+
+RAMTransferOAM: ld    hl, $ff46
+                ld    [hl], $04
+                ld    a, $28
+.wait:          dec   a
+                jr    NZ, .wait
+                ret
 
 
 
