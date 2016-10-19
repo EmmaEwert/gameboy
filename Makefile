@@ -4,8 +4,11 @@ transparency.gb: transparency/main.obj
 	rgblink -otransparency.gb transparency/main.obj
 	rgbfix -v transparency.gb
 
-transparency/main.obj: transparency/main.asm
+transparency/main.obj: transparency/main.asm transparency/lyra.2bpp
 	rgbasm -otransparency/main.obj -h transparency/main.asm
+
+transparency/lyra.2bpp: transparency/lyra.png
+	rgbgfx -o transparency/lyra.2bpp transparency/lyra.png
 
 scanlines.gb: scanlines/main.obj
 	rgblink -oscanlines.gb scanlines/main.obj

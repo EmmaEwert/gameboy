@@ -126,6 +126,10 @@ TEXT_TILES      set   TEXT_TILES+1
                 dw    `00000000
 TEXT_TILES      set   TEXT_TILES+1
 TILES           set   TILES+TEXT_TILES
+Sprites:
+incbin          "transparency/lyra.2bpp"
+SPRITES         set   $10
+
 
 
 
@@ -194,6 +198,46 @@ Setup:;                    ┌──┬LY
                 ld    [hl], %01000010
                 ld    [hl], %11111111
                 ld    [hl], %01111111
+.writeSprites:  ld    hl, $ff51
+                ld    [hl], (Sprites+$00)/$100
+                inc   l
+                ld    [hl], (Sprites+$00)%$100
+                inc   l
+                ld    [hl], $88
+                inc   l
+                ld    [hl], $00
+                inc   l
+                ld    [hl], SPRITES/4-1
+                ld    hl, $ff51
+                ld    [hl], (Sprites+$40)/$100
+                inc   l
+                ld    [hl], (Sprites+$40)%$100
+                inc   l
+                ld    [hl], $89
+                inc   l
+                ld    [hl], $00
+                inc   l
+                ld    [hl], SPRITES/4-1
+                ld    hl, $ff51
+                ld    [hl], (Sprites+$80)/$100
+                inc   l
+                ld    [hl], (Sprites+$80)%$100
+                inc   l
+                ld    [hl], $8a
+                inc   l
+                ld    [hl], $00
+                inc   l
+                ld    [hl], SPRITES/4-1
+                ld    hl, $ff51
+                ld    [hl], (Sprites+$c0)/$100
+                inc   l
+                ld    [hl], (Sprites+$c0)%$100
+                inc   l
+                ld    [hl], $8b
+                inc   l
+                ld    [hl], $00
+                inc   l
+                ld    [hl], SPRITES/4-1
 ;                          ┌──┬LCD VRAM Bank
 .writeTextTiles:ld    hl, $ff4f;┌VRAM Bank = 1
                 set             0, [hl]
