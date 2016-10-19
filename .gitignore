@@ -1,5 +1,7 @@
 *.gb
+*.sav
 *.obj
 *.png
+colors
 palette
 still

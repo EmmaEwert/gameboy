@@ -1,4 +1,4 @@
-all: scanlines.gb den.gb lapras.gb palette still
+all: scanlines.gb den.gb lapras.gb palette still colors
 
 scanlines.gb: scanlines/main.obj
 	rgblink -oscanlines.gb scanlines/main.obj
@@ -24,6 +24,9 @@ lapras/main.obj: lapras/main.asm lapras/map.asm lapras/palette.asm lapras/header
 lapras/lapras.2bpp: lapras/lapras.png
 	rgbgfx -o lapras/lapras.2bpp lapras/lapras.png
 
+colors: tools/colors.go
+	go build tools/colors.go
+
 palette: tools/palette.go
 	go build tools/palette.go
 
@@ -31,4 +34,4 @@ still: tools/still.go
 	go build tools/still.go
 
 clean:
-	rm dragons-den/main.obj den.gb lapras/main.obj lapras.gb scanlines/main.obj scanlines.gb palette still
+	rm dragons-den/main.obj den.gb lapras/main.obj lapras.gb scanlines/main.obj scanlines.gb colors palette still
