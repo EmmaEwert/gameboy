@@ -31,140 +31,18 @@ MapAttributes:  rept  MAP
 
 WINDOW_ATTRIBUTES set 0
 WindowAttributes:
-                db    $02, $02, $02, $02, $89, $89, $89, $89
-                db    $89, $89, $89, $89, $89, $89, $89, $89
-                db    $89, $89, $89, $89, $89, $89, $89, $89
-                db    $89, $89, $89, $89, $89, $89, $89, $89
-WINDOW_ATTRIBUTES set WINDOW_ATTRIBUTES+$20
-                db    $02, $02, $02, $02, $89, $89, $89, $89
-                db    $89, $89, $89, $89, $89, $89, $89, $89
-                db    $89, $89, $89, $89, $89, $89, $89, $89
-                db    $89, $89, $89, $89, $89, $89, $89, $89
-WINDOW_ATTRIBUTES set WINDOW_ATTRIBUTES+$20
-                db    $02, $02, $02, $02, $89, $89, $89, $89
-                db    $89, $89, $89, $89, $89, $89, $89, $89
-                db    $89, $89, $89, $89, $89, $89, $89, $89
-                db    $89, $89, $89, $89, $89, $89, $89, $89
-WINDOW_ATTRIBUTES set WINDOW_ATTRIBUTES+$20
-                db    $02, $02, $02, $02, $89, $89, $89, $89
-                db    $89, $89, $89, $89, $89, $89, $89, $89
-                db    $89, $89, $89, $89, $89, $89, $89, $89
-                db    $89, $89, $89, $89, $89, $89, $89, $89
-WINDOW_ATTRIBUTES set WINDOW_ATTRIBUTES+$20
-                rept  $400-WINDOW_ATTRIBUTES
-                db    %10001001;$89
+                rept  $400
+                db    %0001001
 WINDOW_ATTRIBUTES set WINDOW_ATTRIBUTES+1
                 endr
-WINDOW_MAP      set   0
-WindowMap:      db    $80, $81, $82, $83, $00, $01, $02, $03
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-WINDOW_MAP      set   WINDOW_MAP+$20
-                db    $90, $91, $92, $93, $10, $11, $12, $13
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-WINDOW_MAP      set   WINDOW_MAP+$20
-                db    $a0, $a1, $a2, $a3, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-WINDOW_MAP      set   WINDOW_MAP+$20
-                db    $b0, $b1, $b2, $b3, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-WINDOW_MAP      set   WINDOW_MAP+$20
-                rept  $20-(WINDOW_MAP/$20)
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-                db    $40, $40, $40, $40, $40, $40, $40, $40
-WINDOW_MAP      set   WINDOW_MAP+$20
-                endr
 
-TILES           set   0
-TEXT_TILES      set   0
-TextTiles:      dw    `33333333
-                dw    `33333333
-                dw    `00000000
-                dw    `00000000
-                dw    `33100000
-                dw    `30301320
-                dw    `33103030
-                dw    `30003030
-TEXT_TILES      set   TEXT_TILES+1
-                dw    `33333333
-                dw    `33333333
-                dw    `00000020
-                dw    `00000300
-                dw    `30000000
-                dw    `30001310
-                dw    `30303030
-                dw    `33003330
-TEXT_TILES      set   TEXT_TILES+1
-                dw    `33333333
-                dw    `33333333
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `33131013
-                dw    `31313030
-                dw    `30303030
-TEXT_TILES      set   TEXT_TILES+1
-                dw    `33333333
-                dw    `33333333
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `20332000
-                dw    `30303000
-                dw    `30303000
-TEXT_TILES      set   TEXT_TILES+1
-                rept  $10-$04
-                rept  $08
-                dw    `00000000
-                endr
-TEXT_TILES      set   TEXT_TILES+1
-                endr
-                dw    `30003030
-                dw    `30002310
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-TEXT_TILES      set   TEXT_TILES+1
-                dw    `30203000
-                dw    `30301330
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-TEXT_TILES      set   TEXT_TILES+1
-                dw    `30303030
-                dw    `30303023
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-TEXT_TILES      set   TEXT_TILES+1
-                dw    `30303000
-                dw    `10303000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-                dw    `00000000
-TEXT_TILES      set   TEXT_TILES+1
-TILES           set   TILES+TEXT_TILES
+WindowMap:
+incbin          "transparency/text.tilemap"
+WINDOW_MAP      set   128
+
+TextTiles:
+incbin          "transparency/text.2bpp"
+TEXT_TILES      set   784/16
 
 MapTiles:
 incbin          "transparency/pallet.2bpp"
@@ -224,7 +102,7 @@ SwapBuffer:     ld    hl, $ff40;┌Window Display enabled?
                 ld    [hl], $90-$20
 ;                          ┌──┬Window X Position minus 7
                 ld    hl, $ff4b
-                ld    [hl], $07
+                ld    [hl], $27
 
                 ;call  TransferOAM
                 ret
@@ -265,14 +143,14 @@ Setup:;                    ┌──┬LY
                 ld    [hl], %00000000
                 ld    [hl], %00000000
                 ;Palette 1
+                ld    [hl], %00000000
+                ld    [hl], %00000000
                 ld    [hl], %11111111
                 ld    [hl], %01111111
-                ld    [hl], %00010000
-                ld    [hl], %01000010
-                ld    [hl], %00001000
-                ld    [hl], %00100001
-                ld    [hl], %00000000
-                ld    [hl], %00000000
+                ld    [hl], %11111111
+                ld    [hl], %01111111
+                ld    [hl], %11111111
+                ld    [hl], %01111111
                 ;Palette 2
                 ld    [hl], %01011111 ; #f8d0b8
                 ld    [hl], %01011111
