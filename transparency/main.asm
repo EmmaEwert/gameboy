@@ -20,69 +20,14 @@ section "Header", rom0[$0100]
 
 
 section "Data", romx,bank[1]
-MAP             set   0
-Map:            rept  $0e
-                rept  $20
-                db    $00
-MAP             set   MAP+1
-                endr
-                endr
-                db    $80, $81, $82, $83
-MAP             set   MAP+4
-                rept  $20-$04
-                db    $00
-MAP             set   MAP+1
-                endr
-                db    $90, $91, $92, $93
-MAP             set   MAP+4
-                rept  $20-$04
-                db    $00
-MAP             set   MAP+1
-                endr
-                db    $a0, $a1, $a2, $a3
-MAP             set   MAP+4
-                rept  $20-$04
-                db    $00
-MAP             set   MAP+1
-                endr
-                db    $b0, $b1, $b2, $b3
-MAP             set   MAP+4
-                rept  $20-$04
-                db    $00
-MAP             set   MAP+1
+Map:
+incbin          "transparency/pallet.tilemap"
+MAP             set   1024
+
+MapAttributes:  rept  MAP
+                db    $03
                 endr
 
-MAP_ATTRIBUTES  set   0
-MapAttributes:  rept  $0e
-                rept  $20
-                db    $00
-MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+1
-                endr
-                endr
-                db    $02, $02, $02, $02
-MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+4
-                rept  $20-$04
-                db    $00
-MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+1
-                endr
-                db    $02, $02, $02, $02
-MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+4
-                rept  $20-$04
-                db    $00
-MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+1
-                endr
-                db    $02, $02, $02, $02
-MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+4
-                rept  $20-$04
-                db    $00
-MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+1
-                endr
-                db    $02, $02, $02, $02
-MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+4
-                rept  $20-$04
-                db    $00
-MAP_ATTRIBUTES  set   MAP_ATTRIBUTES+1
-                endr
 
 WINDOW_ATTRIBUTES set 0
 WindowAttributes:
@@ -141,8 +86,8 @@ WINDOW_MAP      set   WINDOW_MAP+$20
 
 TILES           set   0
 TEXT_TILES      set   0
-TextTiles:      dw    `00000000
-                dw    `00000000
+TextTiles:      dw    `33333333
+                dw    `33333333
                 dw    `00000000
                 dw    `00000000
                 dw    `33100000
@@ -150,8 +95,8 @@ TextTiles:      dw    `00000000
                 dw    `33103030
                 dw    `30003030
 TEXT_TILES      set   TEXT_TILES+1
-                dw    `00000000
-                dw    `00000000
+                dw    `33333333
+                dw    `33333333
                 dw    `00000020
                 dw    `00000300
                 dw    `30000000
@@ -159,8 +104,8 @@ TEXT_TILES      set   TEXT_TILES+1
                 dw    `30303030
                 dw    `33003330
 TEXT_TILES      set   TEXT_TILES+1
-                dw    `00000000
-                dw    `00000000
+                dw    `33333333
+                dw    `33333333
                 dw    `00000000
                 dw    `00000000
                 dw    `00000000
@@ -168,8 +113,8 @@ TEXT_TILES      set   TEXT_TILES+1
                 dw    `31313030
                 dw    `30303030
 TEXT_TILES      set   TEXT_TILES+1
-                dw    `00000000
-                dw    `00000000
+                dw    `33333333
+                dw    `33333333
                 dw    `00000000
                 dw    `00000000
                 dw    `00000000
@@ -221,6 +166,10 @@ TEXT_TILES      set   TEXT_TILES+1
 TEXT_TILES      set   TEXT_TILES+1
 TILES           set   TILES+TEXT_TILES
 
+MapTiles:
+incbin          "transparency/pallet.2bpp"
+MAP_TILES       set   1488/16
+
 Sprites:
 incbin          "transparency/lyra.2bpp"
 SPRITES         set   $10
@@ -264,6 +213,12 @@ SwapBuffer:     ld    hl, $ff40;┌Window Display enabled?
                 ld    a,     %00100000
                 xor   [hl]
                 ld    [hl], a
+;                          ┌──┬Scroll Y
+                ld    hl, $ff42
+                ld    [hl], $40
+;                          ┌──┬Scroll X
+                ld    hl, $ff43
+                ld    [hl], $20
 ;                          ┌──┬Window Y Position
                 ld    hl, $ff4a
                 ld    [hl], $90-$20
@@ -300,7 +255,8 @@ Setup:;                    ┌──┬LY
                 ld    [hl],    %10000000
 ;                          ┌──┬Background Palette Data
                 inc   l;  $ff69
-                ld    [hl], %10001000;Palette 0
+                ;Palette 0
+                ld    [hl], %10001000
                 ld    [hl], %01000000
                 ld    [hl], %00000000
                 ld    [hl], %00000000
@@ -308,14 +264,15 @@ Setup:;                    ┌──┬LY
                 ld    [hl], %00000000
                 ld    [hl], %00000000
                 ld    [hl], %00000000
-                ld    [hl], %00000000;Palette 1
-                ld    [hl], %00000000
-                ld    [hl], %00001000
-                ld    [hl], %00100001
-                ld    [hl], %00010000
-                ld    [hl], %01000010
+                ;Palette 1
                 ld    [hl], %11111111
                 ld    [hl], %01111111
+                ld    [hl], %00010000
+                ld    [hl], %01000010
+                ld    [hl], %00001000
+                ld    [hl], %00100001
+                ld    [hl], %00000000
+                ld    [hl], %00000000
                 ;Palette 2
                 ld    [hl], %01011111 ; #f8d0b8
                 ld    [hl], %01011111
@@ -325,7 +282,26 @@ Setup:;                    ┌──┬LY
                 ld    [hl], %00100001
                 ld    [hl], %11111111 ; #f8f8f8
                 ld    [hl], %01111111
+                ;Palette 3
+                ld    [hl],%01100011 ; #181818
+                ld    [hl],%00001100
+                ld    [hl],%00110111 ; #b888f8
+                ld    [hl],%01111110
+                ld    [hl],%11101011 ; #58b8f8
+                ld    [hl],%01111110
+                ld    [hl],%11111111 ; #f8f8f8
+                ld    [hl],%01111111
 
+.writeMapTiles: ld    hl, $ff51
+                ld    [hl], MapTiles/$100
+                inc   l
+                ld    [hl], MapTiles%$100
+                inc   l
+                ld    [hl], $80
+                inc   l
+                ld    [hl], $00
+                inc   l
+                ld    [hl], MAP_TILES-1
 .writeSprites:  ld    hl, $ff51
                 ld    [hl], (Sprites+$00)/$100
                 inc   l
@@ -376,6 +352,47 @@ Setup:;                    ┌──┬LY
                 ld    [hl], $00
                 inc   l
                 ld    [hl], (MAP/$10-1)
+.writePortrait: ld    hl, $9ac4
+                ld    [hl], $80
+                inc   hl
+                ld    [hl], $81
+                inc   hl
+                ld    [hl], $82
+                inc   hl
+                ld    [hl], $83
+                rept  $20-$03
+                inc   hl
+                endr
+                ld    [hl], $90
+                inc   hl
+                ld    [hl], $91
+                inc   hl
+                ld    [hl], $92
+                inc   hl
+                ld    [hl], $93
+                rept  $20-$03
+                inc   hl
+                endr
+                ld    [hl], $a0
+                inc   hl
+                ld    [hl], $a1
+                inc   hl
+                ld    [hl], $a2
+                inc   hl
+                ld    [hl], $a3
+                rept  $20-$03
+                inc   hl
+                endr
+                ld    [hl], $b0
+                inc   hl
+                ld    [hl], $b1
+                inc   hl
+                ld    [hl], $b2
+                inc   hl
+                ld    [hl], $b3
+                rept  $20-$03
+                inc   hl
+                endr
 ;                          ┌──┬LCD VRAM Bank
 .writeTextTiles:ld    hl, $ff4f;┌VRAM Bank = 1
                 set             0, [hl]
@@ -400,6 +417,48 @@ Setup:;                    ┌──┬LY
                 ld    [hl], $00
                 inc   l
                 ld    [hl], (MAP/$10-1)
+.writePortraitAttributes:
+                ld    hl, $9ac4
+                ld    [hl], $02
+                inc   hl
+                ld    [hl], $02
+                inc   hl
+                ld    [hl], $02
+                inc   hl
+                ld    [hl], $02
+                rept  $20-$03
+                inc   hl
+                endr
+                ld    [hl], $02
+                inc   hl
+                ld    [hl], $02
+                inc   hl
+                ld    [hl], $02
+                inc   hl
+                ld    [hl], $02
+                rept  $20-$03
+                inc   hl
+                endr
+                ld    [hl], $02
+                inc   hl
+                ld    [hl], $02
+                inc   hl
+                ld    [hl], $02
+                inc   hl
+                ld    [hl], $02
+                rept  $20-$03
+                inc   hl
+                endr
+                ld    [hl], $02
+                inc   hl
+                ld    [hl], $02
+                inc   hl
+                ld    [hl], $02
+                inc   hl
+                ld    [hl], $02
+                rept  $20-$03
+                inc   hl
+                endr
 .writeWindowAttributes:
                 ld    hl, $ff51
                 ld    [hl], WindowAttributes/$100
