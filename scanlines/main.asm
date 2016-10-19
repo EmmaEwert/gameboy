@@ -192,7 +192,7 @@ TILES set 1
                 inc   l   ;$55
                 ld    [hl],(TILES-1)
 .writeMap:      ld    hl, $ff4f
-                ld    [hl], 1; bank 0
+                ld    [hl], 1; bank 1
                 ld    hl, $ff51
                 ld    [hl],Map/$100
                 inc   l   ;$52
