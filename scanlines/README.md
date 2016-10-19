@@ -79,8 +79,11 @@ enough free cycles left for another 5 colours that are a combination of any
 immediate byte and a register value, as well as one extra pure immediate colour,
 and an immediate `gggrrrrr` part of one more colour.
 
-This gives us 31½ new, somewhat controllable colours per scanline: 4'536 colours
-on screen.
+Furthermore, registers h and l implicitly contain the values `%11111111` and
+`%01101001`, respectively.
+
+Not using h or l, this gives us 31½ new, somewhat controllable colours per
+scanline: 4'536 colours on screen.
 
 The Game Boy Color mixes the current and last frame, though. By changing the
 colours displayed each frame, this can drastically increase the number of

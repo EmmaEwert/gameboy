@@ -63,26 +63,6 @@ Main:           call  Setup
 
 
 section "Code", rom0
-Scanline:
-
-                ld    hl, $ff68       ;6 cycles
-                ld    [hl], %10000000 ;6 cycles
-                ld    a, $69          ;4 cycles
-                ld    bc, %0000000011111111       ;6 cycles
-                ld    de, %0110001100011100       ;6 cycles
-                ;VRAM accessible after roughly 224 cycles
-
-;                          ┌──┬LCD Status
-                ld    hl, $ff41; ┌Mode 0 H-Blank interrupt enabled?
-                ld    [hl], %00001000
-
-;                          ┌──┬Interrupt Flag
-                ld    hl, $ff0f;┌LCD Status
-.notHBlank      bit             1, [hl]
-                jr    Z, .notHBlank
-                ld    l, a
-                ld    a, %10000011
-
 color:          macro
                 if \1 == 0
                 ld    [hl], a
@@ -105,6 +85,33 @@ color:          macro
                 endc
                 endc
                 endm
+
+
+
+Scanline:
+aRegister       set   %10000011
+bRegister       set   %00000000
+cRegister       set   %11111111
+dRegister       set   %01100011
+eRegister       set   %00011100
+                rept  143
+                ld    hl, $ff68       ;6 cycles
+                ld    [hl], %10000000 ;6 cycles
+                ld    a, aRegister % $100          ;4 cycles
+                ld    bc, (bRegister << 8 + cRegister) % $100       ;6 cycles
+                ld    de, (dRegister << 8 + eRegister) % $100       ;6 cycles
+                ;VRAM accessible after roughly 224 cycles
+
+;                          ┌──┬LCD Status
+                ld    hl, $ff41; ┌Mode 0 H-Blank interrupt enabled?
+                ld    [hl], %00001000
+
+;                          ┌──┬Interrupt Flag
+                ld    hl, $ff0f;┌LCD Status
+.notHBlank\@    bit             1, [hl]
+                jr    Z, .notHBlank\@
+                ld    l, $69
+
 
                 ;VRAM accessible for roughly 280 cycles
 hi              set   0
@@ -136,6 +143,12 @@ hi              set   hi+1
 ;                          ┌──┬Interrupt Flag
                 ld    hl, $ff0f;┌LCD Status
                 res             1, [hl]
+aRegister       set   aRegister + 1
+bRegister       set   bRegister + 1
+cRegister       set   cRegister + 1
+dRegister       set   dRegister + 1
+eRegister       set   eRegister + 1
+                endr
                 ret
 
 
@@ -201,7 +214,7 @@ TILES set 1
                 ld    [hl],   %01000000
 ;                          ┌──┬LYC
                 ld    hl, $ff45;┌┬Set LCD Status LYC=LY Coincidence flag here
-                ld    [hl],    $01
+                ld    [hl],    $00
 ;                          ┌Interrupt Enable register
 ;                          ├──┐;   ┌LCD Status interrupt enabled?
                 ld    hl, $ffff;   │┌V-Blank interrupt enabled?
