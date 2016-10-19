@@ -80,7 +80,7 @@ immediate byte and a register value, as well as one extra pure immediate colour,
 and an immediate `gggrrrrr` part of one more colour.
 
 Furthermore, registers h and l implicitly contain the values `%11111111` and
-`%01101001`, respectively.
+`%01101001`, respectively, from the *[$ff69] BG palette data* reigster address.
 
 Not using h or l, this gives us 31½ new, somewhat controllable colours per
 scanline: 4'536 colours on screen.
@@ -88,3 +88,6 @@ scanline: 4'536 colours on screen.
 The Game Boy Color mixes the current and last frame, though. By changing the
 colours displayed each frame, this can drastically increase the number of
 colours on screen.
+
+The current code displays 11'011 colours on screen. Properly used frame mixing
+should make it possible to increase this colour count even further.
