@@ -100,7 +100,7 @@ bRegister       set   %01010101
 cRegister       set   %00011111
 dRegister       set   %11100000
 eRegister       set   %01111100
-                rept  143
+                rept  144
                 ld    hl, $ff68       ;6 cycles
                 ld    [hl], %10000000 ;6 cycles
                 ld    a, aRegister % $100          ;4 cycles
@@ -146,11 +146,11 @@ hi              set   hi+1
 ;                          ┌──┬Interrupt Flag
                 ld    hl, $ff0f;┌LCD Status
                 res             1, [hl]
-aRegister       set   aRegister + 1
-bRegister       set   bRegister + 3
-cRegister       set   cRegister + 5
-dRegister       set   dRegister + 7
-eRegister       set   eRegister + 11
+aRegister       set   aRegister + 3
+bRegister       set   bRegister + 5
+cRegister       set   cRegister + 7
+dRegister       set   dRegister + 11
+eRegister       set   eRegister + 13
                 endr
                 ret
 

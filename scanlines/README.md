@@ -89,5 +89,5 @@ The Game Boy Color mixes the current and last frame, though. By changing the
 colours displayed each frame, this can drastically increase the number of
 colours on screen.
 
-The current code displays 11'011 colours on screen. Properly used frame mixing
+The current code displays 18'986 colours on screen. Properly used frame mixing
 should make it possible to increase this colour count even further.
