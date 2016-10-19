@@ -75,9 +75,15 @@ color:          macro
                 else if \1 == 4
                 ld    [hl], e
                 else if \1 == 5
-                ld    [hl], %011111000
+                ld    [hl], l
+                else if \1 == 6
+                ld    [hl], h
+                else if \1 == 7
+                ld    [hl], %101010101
                 else
                 ld    [hl], \2
+                endc
+                endc
                 endc
                 endc
                 endc
@@ -89,17 +95,17 @@ color:          macro
 
 
 Scanline:
-aRegister       set   %10000011
-bRegister       set   %00000000
-cRegister       set   %11111111
-dRegister       set   %01100011
-eRegister       set   %00011100
+aRegister       set   %00000000
+bRegister       set   %01010101
+cRegister       set   %00011111
+dRegister       set   %11100000
+eRegister       set   %01111100
                 rept  143
                 ld    hl, $ff68       ;6 cycles
                 ld    [hl], %10000000 ;6 cycles
                 ld    a, aRegister % $100          ;4 cycles
-                ld    bc, (bRegister << 8 + cRegister) % $100       ;6 cycles
-                ld    de, (dRegister << 8 + eRegister) % $100       ;6 cycles
+                ld    bc, ((bRegister << 8) + cRegister) % $10000       ;6 cycles
+                ld    de, ((dRegister << 8) + eRegister) % $10000       ;6 cycles
                 ;VRAM accessible after roughly 224 cycles
 
 ;                          ┌──┬LCD Status
@@ -114,26 +120,23 @@ eRegister       set   %00011100
 
 
                 ;VRAM accessible for roughly 280 cycles
+count           set   0
 hi              set   0
-                rept  6
+                rept  7
 lo              set   0
                 rept  5
+                if    count < (7 * 5 - 3)
                 color lo
                 color hi
+                endc
+count           set   count+1
 lo              set   lo+1
                 endr
 hi              set   hi+1
                 endr
-                ld    [hl], %00000000 ;6 cycles
-                ld    [hl], %00000000 ;6 cycles
-                rept  0;33
-                ld    [hl], b
-                ld    [hl], b
-                endr
-                rept  0;22
-                ld    [hl], %00000000 ;6 cycles
-                ld    [hl], %00000000 ;6 cycles
-                endr
+                ;ld    [hl], %11111111 ;6 cycles
+                ;ld    [hl], %00000000 ;6 cycles
+                ;ld    [hl], %01100110 ;6 cycles
 
 ;                          ┌──┬LCD Status
                 ld    hl, $ff41;┌LYC=LY Coincidence interrupt enabled?
