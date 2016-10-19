@@ -78,6 +78,12 @@ section "V-Blank interrupt vector", rom0[$0040]
 
 
 
+section "LCD Status interrupt vector", rom0[$0048]
+                call  Darken
+                reti
+
+
+
 section "Main", rom0[$0150]
 Main:           call Setup
 .update:        halt
@@ -104,7 +110,54 @@ SwapBuffer:     ld    hl, $ff40;┌Window Display enabled?
                 ld    hl, $ff4b
                 ld    [hl], $27
 
+                ld    hl, $ff68
+                ld    [hl], %10011000
+                inc   l
+                ld    [hl],%01100011 ; #181818
+                ld    [hl],%00001100
+                ld    [hl],%00110111 ; #b888f8
+                ld    [hl],%01111110
+                ld    [hl],%11101011 ; #58b8f8
+                ld    [hl],%01111110
+                ld    [hl],%11111111 ; #f8f8f8
+                ld    [hl],%01111111
+
                 ;call  TransferOAM
+                ret
+
+
+
+Darken:         ld    a, %10011000
+                ld    de, %1110011100011100
+                ld    hl, $ff68
+                ld    [hl], a
+                ld    l, $41
+.noVRAM:        bit   1, [hl]
+                jr    NZ, .noVRAM
+                ld    l, $68
+INDEX           set   %10011000
+                ld    [hl], INDEX
+                rept  $04
+                inc   l
+                ld    b, [hl]
+                ld    [hl], b
+                ld    c, [hl]
+                srl   c
+                rr    b
+                srl   c
+                rr    b
+                ld    a, b
+                and   d
+                dec   l
+                ld    [hl], INDEX
+                inc   l
+                ld    [hl], a
+                ld    a, c
+                and   e
+                ld    [hl], a
+                dec   l
+INDEX           set   INDEX + %00000010
+                endr
                 ret
 
 
@@ -143,21 +196,21 @@ Setup:;                    ┌──┬LY
                 ld    [hl], %00000000
                 ld    [hl], %00000000
                 ;Palette 1
-                ld    [hl], %00000000
-                ld    [hl], %00000000
                 ld    [hl], %11111111
                 ld    [hl], %01111111
+                ld    [hl], %00000000
+                ld    [hl], %00000000
                 ld    [hl], %11111111
                 ld    [hl], %01111111
                 ld    [hl], %11111111
                 ld    [hl], %01111111
                 ;Palette 2
-                ld    [hl], %01011111 ; #f8d0b8
-                ld    [hl], %01011111
-                ld    [hl], %10111111 ; #f86860
-                ld    [hl], %00110001
-                ld    [hl], %11010011 ; #987040
-                ld    [hl], %00100001
+                ld    [hl], %10101111 ; #f8d0b8
+                ld    [hl], %00101101
+                ld    [hl], %11001111 ; #f86860
+                ld    [hl], %00011000
+                ld    [hl], %11101001 ; #987040
+                ld    [hl], %00010000
                 ld    [hl], %11111111 ; #f8f8f8
                 ld    [hl], %01111111
                 ;Palette 3
@@ -379,6 +432,12 @@ Setup:;                    ┌──┬LY
 .enableInterrupts:;        ┌──┬Interrupt Enable
                 ld    hl, $ffff;┌V-Blank interrupt enabled?
                 set             0, [hl]
+                set             1, [hl];LCD Status
+;                          ┌──┬LCD Status
+                ld    hl, $ff41;┌LYC=LY Coincidence Interrupt Enabled?
+                set             6, [hl]
+                ld    hl, $ff45
+                ld    [hl], $6f
                 reti
 
 
