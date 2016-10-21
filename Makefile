@@ -1,8 +1,20 @@
-all: transparency.gb scanlines.gb den.gb lapras.gb palette still colors
+all: weather.gb transparency.gb scanlines.gb den.gb lapras.gb palette still colors
+
+weather.gb: weather/main.obj
+	rgblink -o$@ $?
+	rgbfix -v $@
+
+weather/main.obj: weather/main.asm
+	rgbasm -h -iinclude/ -o$@ $?
+
+weather/main.asm: include/pallet-town.2bpp
+
+include/pallet-town.2bpp: include/pallet-town.png
+	rgbgfx -T -u -o $@ $?
 
 transparency.gb: transparency/main.obj
-	rgblink -otransparency.gb transparency/main.obj
-	rgbfix -v transparency.gb
+	rgblink -o$@ transparency/main.obj
+	rgbfix -v $@
 
 transparency/main.obj: transparency/main.asm transparency/lyra.2bpp transparency/pallet.2bpp transparency/text.2bpp
 	rgbasm -otransparency/main.obj -h transparency/main.asm
@@ -17,22 +29,22 @@ transparency/text.2bpp: transparency/text.png
 	rgbgfx -T -u -o transparency/text.2bpp transparency/text.png
 
 scanlines.gb: scanlines/main.obj
-	rgblink -oscanlines.gb scanlines/main.obj
-	rgbfix -v scanlines.gb
+	rgblink -o$@ scanlines/main.obj
+	rgbfix -v $@
 
 scanlines/main.obj: scanlines/main.asm
 	rgbasm -oscanlines/main.obj -h scanlines/main.asm
 
 den.gb: dragons-den/main.obj
-	rgblink -oden.gb dragons-den/main.obj
-	rgbfix -v den.gb
+	rgblink -o$@ dragons-den/main.obj
+	rgbfix -v $@
 
 dragons-den/main.obj: dragons-den/main.asm
 	rgbasm -odragons-den/main.obj -h dragons-den/main.asm
 
 lapras.gb: lapras/main.obj
-	rgblink -olapras.gb lapras/main.obj
-	rgbfix -v lapras.gb
+	rgblink -o$@ lapras/main.obj
+	rgbfix -v $@
 
 lapras/main.obj: lapras/main.asm lapras/map.asm lapras/palette.asm lapras/header.inc lapras/lapras.2bpp
 	rgbasm -ilapras/ -olapras/main.obj -h lapras/main.asm
