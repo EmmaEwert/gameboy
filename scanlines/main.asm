@@ -25,21 +25,7 @@ WaitForLY144:   macro;     ┌──┬LY register
 section "Header", rom0[$0100]
                 di
                 jp    Main
-                db    $ce, $ed, $66, $66, $cc, $0d, $00, $0b, $03, $73, $00, $83
-                db    $00, $0c, $00, $0d, $00, $08, $11, $1f, $88, $89, $00, $0e
-                db    $dc, $cc, $6e, $e6, $dd, $dd, $d9, $99, $bb, $bb, $67, $63
-                db    $6e, $0e, $ec, $cc, $dd, $dc, $99, $9f, $bb, $b9, $33, $3e
-                db    "SCANLINES  EMMA"
-                db    $80       ;GBC+DMG
-                db    "PD"
-                db    $00       ;No SGB
-                db    $1b       ;MBC5+RAM+Battery
-                db    $08       ;  8 MiB ROM
-                db    $04       ;128 KiB RAM
-                db    $01       ;International
-                db    $33
-                db    %10       ;0.1.0
-                db    $00, $00, $00
+                ds    75
 
 
 

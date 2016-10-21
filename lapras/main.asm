@@ -1,4 +1,4 @@
-include "header.inc"
+include "lapras/header.inc"
 
 section "V-Blank", rom0[$40]
   call LoadPalettes
@@ -91,9 +91,9 @@ EnableLCD
 
 section "Tile data", romx,bank[1]
 TileData
-incbin "lapras.2bpp"
+incbin "lapras/lapras.2bpp"
 
-include "map.asm"
-include "palette.asm"
+include "lapras/map.asm"
+include "lapras/palette.asm"
 
 ; vim:syn=rgbasm

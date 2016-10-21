@@ -1,7 +1,9 @@
 *.gb
 *.sav
 *.obj
-*.png
+*.2bpp
+*.pal
+*.tilemap
 colors
 palette
 still
