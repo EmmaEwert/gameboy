@@ -63,7 +63,6 @@ InitializeSine: ld    hl, Sine
                 ld    [hl], $00
                 inc   hl
                 ld    [hl], $00
-
 ;The first V-Blank interrupt has different behaviour, so skip it:
 SkipVBlank:     ld    l, $44
                 ld    a, $8f
@@ -114,7 +113,11 @@ VBlank:
                 ld    a, [hl]
                 ld    hl, $ff43
                 ld    [hl], a
-.skip:          reti
+.toggleWindow:  ld    hl, $ff40
+                ld    a, %00100000
+                xor   [hl]
+                ld    [hl], a
+                reti
 
 
 
@@ -167,9 +170,7 @@ section "Header", rom0[$0100]
 
 
 section "Main", rom0[$0150]
-Main:           call Setup
+Main:           call  Setup
 .wait:          halt
                 nop
                 jr    .wait
-
-; vim:filetype=rgbasm expandtab softtabstop=2

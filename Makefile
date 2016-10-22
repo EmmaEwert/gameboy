@@ -11,19 +11,19 @@ $(roms): %.gb: %/main.obj
 	rgblink -o$@ $?
 	rgbfix $(fixflags) $@
 
-%.obj: %.asm
+%.obj: %.rgbasm
 	rgbasm $(asmflags) -o$@ $<
 
 
 # Weather
-weather/main.asm: $(addprefix include/pallet-town,.2bpp .pal .tilemap)
+weather/main.rgbasm: $(addprefix include/pallet-town,.2bpp .pal .tilemap)
 
 $(addprefix include/pallet-town,.2bpp .pal .tilemap): include/pallet-town.png
 	rgbgfx -P -T -u -o $@ $<
 
 
 # Transparency
-transparency/main.asm: $(addprefix transparency/,lyra.2bpp pallet.2bpp text.2bpp)
+transparency/main.rgbasm: $(addprefix transparency/,lyra.2bpp pallet.2bpp text.2bpp)
 
 transparency/lyra.2bpp: transparency/lyra.png
 	rgbgfx -o $@ $<
@@ -36,7 +36,7 @@ transparency/text.2bpp: transparency/text.png
 
 
 # Lapras
-lapras/main.asm: $(addprefix lapras/,map.asm palette.asm header.inc lapras.2bpp)
+lapras/main.rgbasm: $(addprefix lapras/,map.rgbasm palette.rgbasm header.inc lapras.2bpp)
 
 lapras/lapras.2bpp: lapras/lapras.png
 	rgbgfx -o $@ $?

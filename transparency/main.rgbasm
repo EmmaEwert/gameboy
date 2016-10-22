@@ -437,4 +437,4 @@ RAMTransferOAM: ld    hl, $ff46
 
 
 
-; vim:filetype=rgbasm expandtab softtabstop=2
+; vim:filetype=rgbds expandtab softtabstop=2
