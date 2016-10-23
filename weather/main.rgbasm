@@ -8,6 +8,7 @@ DisableLCD:     ld    hl, $ff44;┌┬Line 144, V-Blank starts
 ;                          ┌──┬LCD Control
                 ld    hl, $ff40;┌LCD Display enabled?
                 res             7, [hl]
+                set             6, [hl];Window Map @ $9c00
 
 ;                          ┌──┬Prepare Speed Switch, CGB Mode Only
 SwitchSpeed:    ld    hl, $ff4d;┌Prepare Speed Switch?
@@ -29,14 +30,28 @@ Upload:         include "big-endian.inc"
                 push  de
                 push  bc
                 ld    [hl], (MapEnd-Map)/$10-$01
-.mapAttributes: ldbe  bc, MapAttributes
+.windowMap:     ldbe  bc, WindowMap
+                ldbe  de, $9c00
                 ld    sp, hl
                 push  de
                 push  bc
-                ld    [$ff4f], a
+                ld    [hl], (WindowMapEnd-WindowMap)/$10-$01
+.mapAttributes: ldbe  bc, MapAttributes
+                ldbe  de, $9800
+                ld    sp, hl
+                push  de
+                push  bc
+                ld    [$ff4f], a;bank 1
                 ld    [hl], (MapAttributesEnd-MapAttributes)/$10-$01
+.windowAttributes:
+                ldbe  bc, WindowAttributes
+                ldbe  de, $9c00
+                ld    sp, hl
+                push  de
+                push  bc
+                ld    [hl], (WindowAttributesEnd-WindowAttributes)/$10-$01
                 xor   1
-                ld    [$ff4f], a
+                ld    [$ff4f], a;bank 0
 .mapPalette:    ld    l, $68
                 ld    [hl], %10000000
                 inc   l
@@ -46,6 +61,17 @@ Upload:         include "big-endian.inc"
                 ld    [hl], c
                 ld    [hl], b
                 endr
+                
+.windowPalette: ld    l, $68
+                ld    [hl], %10001000
+                inc   l
+                ld    sp, WindowPalette
+                rept  $03
+                pop   bc
+                ld    [hl], c
+                ld    [hl], b
+                endr
+                
                 ld    sp, $fffc;Ready stack pointer for return
 
 EnableLCD:      ld    l, $40
@@ -58,10 +84,11 @@ EnableInterrupts:
 InitializeSine: ld    hl, Sine
                 ld    [hl], $00
                 inc   hl
-                ld    [hl], $01
-                inc   hl
+                ld    [hl], $40
+                
+InitializeRain: ld    hl, RainTile
                 ld    [hl], $00
-                inc   hl
+                ld    hl, Delay
                 ld    [hl], $00
 ;The first V-Blank interrupt has different behaviour, so skip it:
 SkipVBlank:     ld    l, $44
@@ -77,55 +104,73 @@ SkipVBlank:     ld    l, $44
 
 
 VBlank:
-.y:             ld    hl, Sine
+.scroll         ;ld    hl, Delay
+                ;ld    a, [hl]
+                ;inc   [hl]
+                ;cp    $01
+                ;jr    NZ, .toggleWindow
+                ;xor   a
+                ;ld    [hl], a
+                ld    hl, Sine
                 ld    b, [hl]
                 inc   [hl]
-                jr    NZ, .noCarryY
                 inc   hl
+                ld    c, [hl]
                 inc   [hl]
-                dec   hl
-.noCarryY:      inc   hl
-                ld    a, [hl]
-                and   %00000011
-                ld    [hl], a
                 ld    hl, Sines
-                add   h
-                ld    h, a
-                ld    l, b
-                ld    a, [hl]
+                ld    a, b
+                add   l
+                ld    l, a
+                ld    a, $40
+                add   [hl]
+                ld    b, a
+                ld    hl, Sines
+                ld    a, c
+                add   l
+                ld    l, a
+                ld    a, $30
+                add   [hl]
+                ld    c, a
                 ld    hl, $ff42
-                ld    [hl], a
-.x:             ld    hl, Cosine
-                ld    b, [hl]
-                inc   [hl]
-                jr    NZ, .noCarryX
-                inc   hl
-                inc   [hl]
-                dec   hl
-.noCarryX:      inc   hl
-                ld    a, [hl]
-                and   %00000011
-                ld    [hl], a
-                ld    hl, Sines
-                add   h
-                ld    h, a
-                ld    l, b
-                ld    a, [hl]
+                ld    [hl], b
                 ld    hl, $ff43
-                ld    [hl], a
+                ld    [hl], c
+                jr    .toggleWindow
 .toggleWindow:  ld    hl, $ff40
                 ld    a, %00100000
                 xor   [hl]
                 ld    [hl], a
-                reti
+                bit   5, a
+                jr    Z, .return
+.updateRain:    ld    hl, RainTile
+                ld    a, %00000111
+                and   [hl]
+                inc   [hl]
+                rla
+                rla
+                rla
+                rla
+                ld    b, $00
+                ld    c, a
+                ld    hl, WindowTiles
+                add   hl, bc
+                ld    bc, $8400
+                rept  $10
+                ld    a, [hl+]
+                ld    [bc], a
+                inc   bc
+                endr
+.return         reti
 
 
 
 
 
 section "HRAM", hram
-Sine:           ds    2
-Cosine:         ds    2
+Sine:           ds    1
+Cosine:         ds    1
+RainTile:       ds    1
+Delay:          ds    1
 
 
 
@@ -139,10 +184,10 @@ section "V-Blank interrupt vector", rom0[$0040]
 
 
 section "Data", romx, bank[1]
-ANGLE           set   0.0
-Sines:          rept  $400
-                db    (mul(64.0, sin(ANGLE))+64.0)>>16
-ANGLE           set   ANGLE+64.0
+angle           set   0.0
+Sines:          rept  $100
+                db    (mul(16.0, sin(angle))+16.0)>>16
+angle           set   angle+256.0
                 endr
 
 MapTiles:       incbin  "pallet-town.2bpp"
@@ -153,6 +198,21 @@ MapAttributes:  rept  MapEnd-Map
                 db    $00
                 endr
 MapAttributesEnd:
+WindowTiles:    incbin  "weather.2bpp"
+WindowTilesEnd:
+WindowMap:      rept  MapEnd-Map
+                db    $40
+                endr
+WindowMapEnd:      
+WindowAttributes:
+flip            set   0
+                rept  WindowMapEnd-WindowMap
+                db    $01 + (((flip % 3) * 16) & %00100000)
+flip            set   flip + 1
+                endr
+WindowAttributesEnd:
+WindowPalette:  incbin  "weather.pal"
+WindowPaletteEnd:
 MapPalette:     incbin  "pallet-town.pal"
 MapPaletteEnd:
 

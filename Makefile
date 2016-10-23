@@ -16,10 +16,13 @@ $(roms): %.gb: %/main.obj
 
 
 # Weather
-weather/main.rgbasm: $(addprefix include/pallet-town,.2bpp .pal .tilemap)
+weather/main.rgbasm: $(addprefix include/pallet-town,.2bpp .pal .tilemap) $(addprefix include/weather,.2bpp .pal)
 
 $(addprefix include/pallet-town,.2bpp .pal .tilemap): include/pallet-town.png
 	rgbgfx -P -T -u -o $@ $<
+
+$(addprefix include/weather,.2bpp .pal): include/weather.png
+	rgbgfx -P -o $@ $<
 
 
 # Transparency
