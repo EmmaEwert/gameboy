@@ -57,5 +57,5 @@ $(tools): %: tools/%.go
 clean:
 	rm -f $(roms)
 	rm -f $(tools)
-	rm -f */**.obj */**.sym */**.2bpp */**.pal */**.tilemap
-	rm -f *.sav
+	rm -f */**.obj */**.2bpp */**.pal */**.tilemap
+	rm -f *.sav *.sym
