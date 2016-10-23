@@ -1,4 +1,4 @@
-roms=weather.gb transparency.gb scanlines.gb den.gb lapras.gb
+roms=daycycle.gb weather.gb transparency.gb scanlines.gb den.gb lapras.gb
 tools=colors palette still
 asmflags=-h -iinclude/
 fixflags=-c -i emma -j -k PD -l 0x33 -m 0x1b -p 0x40 -r 0x04 -t $(*F) -v
@@ -8,11 +8,16 @@ all: $(roms) $(tools)
 
 # Static rules
 $(roms): %.gb: %/main.obj
-	rgblink -o$@ $?
+	rgblink -n $(basename $@).sym -o$@ $?
 	rgbfix $(fixflags) $@
 
 %.obj: %.rgbasm
 	rgbasm $(asmflags) -o$@ $<
+
+
+# Daycycle
+daycycle/main.rgbasm: $(addprefix include/pallet-town,.2bpp .pal .tilemap)
+
 
 
 # Weather
@@ -52,5 +57,5 @@ $(tools): %: tools/%.go
 clean:
 	rm -f $(roms)
 	rm -f $(tools)
-	rm -f */**.obj */**.2bpp */**.pal */**.tilemap
+	rm -f */**.obj */**.sym */**.2bpp */**.pal */**.tilemap
 	rm -f *.sav

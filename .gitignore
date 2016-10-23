@@ -1,6 +1,7 @@
 *.gb
 *.sav
 *.obj
+*.sym
 *.2bpp
 *.pal
 *.tilemap

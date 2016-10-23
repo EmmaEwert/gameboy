@@ -1,0 +1,96 @@
+section "Code", rom0
+VBlank:         ld      hl, $ff68
+index           set     1
+                rept    4
+                ld      a, index
+                ld      [hl+], a
+                ld      a, [hl]
+                dec     a
+                jr      nz, .continue\@
+                inc     a
+.continue\@:    ld      [hl-], a
+index           set     index+2
+                endr
+                reti
+
+
+
+section "Header", rom0[$0100]
+                di
+                jp      Setup
+                ds      75
+
+section "Main", rom0
+Main:           halt
+                nop
+                jr      Main
+                
+                
+
+Setup:
+DisableLCD:     ld      hl, $ff44
+                ld      a, $90
+.ltLY144:       cp      [hl]
+                jr      c, @+2
+                jr      nz, .ltLY144
+                ld      l, $40
+                res     7, [hl]
+                
+SwitchSpeed:    ld      l, $4d
+                set     0, [hl]
+                stop
+                
+Upload:         include "big-endian.inc"
+                ld      a, 1
+                ld      l, $55
+PalletTown:     
+.tiles          ldbe    bc, PalletTownTiles
+                ldbe    de, $8000
+                ld      sp, hl
+                push    de
+                push    bc
+                ld      [hl], (PalletTownMap-PalletTownTiles)/16-1
+.map            ldbe    bc, PalletTownMap
+                ldbe    de, $9800
+                ld      sp, hl
+                push    de
+                push    bc
+                ld      [hl], (PalletTownPalette-PalletTownTiles)/16-1
+.palette:       ld      l, $68
+                ld      [hl], %10000000
+                inc     l
+                ld      sp, PalletTownPalette
+                rept    $04
+                pop     bc
+                ld      [hl], c
+                ld      [hl], b
+                endr
+                
+                ld      sp, $fffe
+                
+Scroll:         ld      l, $42
+                ld      [hl], $28
+                inc     l
+                ld      [hl], $08
+                
+EnableLCD:      ld      l, $40
+                set     7, [hl]
+                
+EnableInterrupts:
+                ld      l, $ff
+                set     0, [hl] ;V-Blank
+                
+                ei
+                jp      Main
+
+
+
+section "V-Blank interrupt", rom0[$40]
+                jp      VBlank
+                
+
+
+section "Data", romx, bank[1]
+PalletTownTiles:        incbin  "pallet-town.2bpp"
+PalletTownMap:          incbin  "pallet-town.tilemap"
+PalletTownPalette:      incbin  "pallet-town.pal"
