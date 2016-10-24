@@ -4,64 +4,31 @@ Lerp:           ld      hl, PaletteIndex
                 ld      c, [hl]
                 inc     [hl]
                 ld      de, $ff68
-                ld      hl, InterpolatedPalette
+                ld      hl, TimedPalette
+                rept    8
                 add     bc
                 add     bc
-                add     bc
-                add     bc
-                add     bc
-                add     bc
-                add     bc
-                add     bc
+                endr
                 
                 ld      a, %10000000
                 ld      [de], a
                 inc     de
                 
+                rept    8
                 ld      a, [hl+]
                 ld      [de], a
                 ld      a, [hl+]
                 ld      [de], a
-                
-                ld      a, [hl+]
-                ld      [de], a
-                ld      a, [hl+]
-                ld      [de], a
-                
-                ld      a, [hl+]
-                ld      [de], a
-                ld      a, [hl+]
-                ld      [de], a
-                
-                ld      a, [hl+]
-                ld      [de], a
-                ld      a, [hl]
-                ld      [de], a
-                
-                reti
-                
-
-
-VBlank:         ld      hl, $ff68
-index           set     1
-                rept    4
-                ld      a, index
-                ld      [hl+], a
-                ld      a, [hl]
-                dec     a
-                jr      nz, .continue\@
-                inc     a
-.continue\@:    ld      [hl-], a
-index           set     index+2
                 endr
+                
                 reti
-
+                
 
 
 section "Header", rom0[$0100]
                 di
                 jp      Setup
-                ds      75
+                ds      $50 - $4
 
 section "Main", rom0
 Main:           halt
@@ -119,6 +86,25 @@ Scroll:         ld      l, $42
 InitializePalette:
                 ld      a, 0
                 ld      [PaletteIndex], a
+                ld      hl, $ff4f
+                ld      [hl], 1;bank
+                ld      a, 1;palette index
+                ld      hl, $9906
+                ld      [hl], a
+                ld      hl, $9946
+                ld      [hl+], a
+                ld      [hl+], a
+                ld      [hl+], a
+                ld      [hl], a
+                ld      hl, $9986
+                ld      [hl+], a
+                ld      [hl+], a
+                ld      hl, $9a92
+                ld      [hl+], a
+                ld      [hl+], a
+                ld      [hl+], a
+                ld      hl, $ff4f
+                ld      [hl], 0;bank
 
 EnableLCD:      ld      l, $40
                 set     7, [hl]
@@ -146,66 +132,99 @@ section "Data", romx, bank[1]
 PalletTownTiles:        incbin  "pallet-town.2bpp"
 PalletTownMap:          incbin  "pallet-town.tilemap"
 PalletTownPalette:      incbin  "pallet-town.pal"
-from0           equ     $030303
-from0r          set     (from0 >> 16) & $1f
-from0g          set     (from0 >> 8) & $1f
-from0b          set     from0 & $1f
-from1           equ     $17111f
-from1r          set     (from1 >> 16) & $1f
-from1g          set     (from1 >> 8) & $1f
-from1b          set     from1 & $1f
-from2           equ     $0b171f
-from2r          set     (from2 >> 16) & $1f
-from2g          set     (from2 >> 8) & $1f
-from2b          set     from2 & $1f
-from3           equ     $1f1f1f
-from3r          set     (from3 >> 16) & $1f
-from3g          set     (from3 >> 8) & $1f
-from3b          set     from3 & $1f
-to0             equ     $000000
-to0r            set     (to0 >> 16) & $1f
-to0g            set     (to0 >> 8) & $1f
-to0b            set     to0 & $1f
-to1             equ     $0c090f
-to1r            set     (to1 >> 16) & $1f
-to1g            set     (to1 >> 8) & $1f
-to1b            set     to1 & $1f
-to2             equ     $080405
-to2r            set     (to2 >> 16) & $1f
-to2g            set     (to2 >> 8) & $1f
-to2b            set     to2 & $1f
-to3             equ     $0f0e18
-to3r            set     (to3 >> 16) & $1f
-to3g            set     (to3 >> 8) & $1f
-to3b            set     to3 & $1f
-frame           set     0
+
+
+
+section "Palettes", romx, bank[1]
 frames          equ     256
-
-lerp:           macro;a, b, f
-\4              set     \1 + \3 * (\2 - \1) / (-8 + frames)
-                endm
                 
-section "Palettes", romx[$5000], bank[1]
-InterpolatedPalette:    
-                rept    frames
-                lerp from0r, to0r, frame, red
-                lerp from0g, to0g, frame, green
-                lerp from0b, to0b, frame, blue
-                dw      red + (green << 5) + (blue << 10)
+lerp24:         macro   ;(rgb24) * (rgb24) * (uint8) -> (rgb24 symbol)
+aRed\@          set     (\1 >> 16) & $ff
+aGreen\@        set     (\1 >>  8) & $ff
+aBlue\@         set     (\1 >>  0) & $ff
+bRed\@          set     (\2 >> 16) & $ff
+bGreen\@        set     (\2 >>  8) & $ff
+bBlue\@         set     (\2 >>  0) & $ff
+red\@           set     aRed\@   + \3 * (bRed\@   - aRed\@)   / (-8 + frames)
+green\@         set     aGreen\@ + \3 * (bGreen\@ - aGreen\@) / (-8 + frames)
+blue\@          set     aBlue\@  + \3 * (bBlue\@  - aBlue\@)  / (-8 + frames)
+\4              set     red\@ << 16 + green\@ << 8 + blue\@
+                endm
 
-                lerp from1r, to1r, frame, red
-                lerp from1g, to1g, frame, green
-                lerp from1b, to1b, frame, blue
-                dw      red + (green << 5) + (blue << 10)
+degrade:        macro   ;(rgb24 symbol) -> (rgb15 symbol)
+red\@           set     (\1 >> 16) & $ff
+green\@         set     (\1 >>  8) & $ff
+blue\@          set     (\1 >>  0) & $ff
+red\@           set     red\@   >>  3
+green\@         set     green\@ >>  3
+blue\@          set     blue\@  >>  3
+\1              set     red\@ + green\@ << 5 + blue\@ << 10
+                endm
 
-                lerp from2r, to2r, frame, red
-                lerp from2g, to2g, frame, green
-                lerp from2b, to2b, frame, blue
-                dw      red + (green << 5) + (blue << 10)
+dwlerp:         macro   ;a, b (24 bit RGB), f (uint8)
+                lerp24  \1, \2, \3, color
+                degrade color
+                dw      color
+                endm
 
-                lerp from3r, to3r, frame, red
-                lerp from3g, to3g, frame, green
-                lerp from3b, to3b, frame, blue
-                dw      red + (green << 5) + (blue << 10)
-frame           set     frame + 1
+TimedPalette:   rept    frames / 8
+                dwlerp  $383838, 0, 0
+                dwlerp  $c09038, 0, 0
+                dwlerp  $a07818, 0, 0
+                dwlerp  $d8f8d8, 0, 0
+                
+                dwlerp  $383838, 0, 0
+                dwlerp  $c09038, 0, 0
+                dwlerp  $a07818, 0, 0
+                dwlerp  $d8f8d8, 0, 0
+                endr
+frame           set     0
+                rept    frames / 4
+                dwlerp  $383838, $000000, frame
+                dwlerp  $c09038, $604878, frame
+                dwlerp  $a07818, $402028, frame
+                dwlerp  $d8f8d8, $7870c0, frame
+                
+                dwlerp  $383838, $000000, frame
+                dwlerp  $c09038, $604878, frame
+                dwlerp  $a07818, $402028, frame
+                dwlerp  $d8f8d8, $7870c0, frame
+frame           set     frame + 4
+                endr
+                rept    frames / 8
+                dwlerp  $000000, 0, 0
+                dwlerp  $604878, 0, 0
+                dwlerp  $402028, 0, 0
+                dwlerp  $7870c0, 0, 0
+                
+                dwlerp  $000000, 0, 0
+                dwlerp  $807090, 0, 0
+                dwlerp  $807050, 0, 0
+                dwlerp  $f0f058, 0, 0
+                endr
+frame           set     0
+                rept    frames / 4
+                dwlerp  $000000, $383838, frame
+                dwlerp  $604878, $c09038, frame
+                dwlerp  $402028, $a07818, frame
+                dwlerp  $7870c0, $e0f880, frame
+                
+                dwlerp  $000000, $383838, frame
+                dwlerp  $807090, $f8f838, frame
+                dwlerp  $807050, $f88008, frame
+                dwlerp  $f0f058, $e0f880, frame
+frame           set     frame + 4
+                endr
+frame           set     0
+                rept    frames / 4
+                dwlerp  $383838, $383838, frame
+                dwlerp  $c09038, $c09038, frame
+                dwlerp  $a07818, $a07818, frame
+                dwlerp  $e0f880, $d8f8d8, frame
+                
+                dwlerp  $383838, $383838, frame
+                dwlerp  $c09038, $c09038, frame
+                dwlerp  $a07818, $a07818, frame
+                dwlerp  $e0f880, $d8f8d8, frame
+frame           set     frame + 4
                 endr
