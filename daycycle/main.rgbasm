@@ -1,4 +1,47 @@
 section "Code", rom0
+Lerp:           ld      hl, PaletteIndex
+                ld      b, 0
+                ld      c, [hl]
+                inc     [hl]
+                ld      de, $ff68
+                ld      hl, InterpolatedPalette
+                add     bc
+                add     bc
+                add     bc
+                add     bc
+                add     bc
+                add     bc
+                add     bc
+                add     bc
+                
+                ld      a, %10000000
+                ld      [de], a
+                inc     de
+                
+                ld      a, [hl+]
+                ld      [de], a
+                ld      a, [hl+]
+                ld      [de], a
+                
+                ld      a, [hl+]
+                ld      [de], a
+                ld      a, [hl+]
+                ld      [de], a
+                
+                ld      a, [hl+]
+                ld      [de], a
+                ld      a, [hl+]
+                ld      [de], a
+                
+                ld      a, [hl+]
+                ld      [de], a
+                ld      a, [hl]
+                ld      [de], a
+                
+                reti
+                
+
+
 VBlank:         ld      hl, $ff68
 index           set     1
                 rept    4
@@ -24,8 +67,8 @@ section "Main", rom0
 Main:           halt
                 nop
                 jr      Main
-                
-                
+
+
 
 Setup:
 DisableLCD:     ld      hl, $ff44
@@ -35,11 +78,11 @@ DisableLCD:     ld      hl, $ff44
                 jr      nz, .ltLY144
                 ld      l, $40
                 res     7, [hl]
-                
+
 SwitchSpeed:    ld      l, $4d
                 set     0, [hl]
                 stop
-                
+
 Upload:         include "big-endian.inc"
                 ld      a, 1
                 ld      l, $55
@@ -65,32 +108,104 @@ PalletTown:
                 ld      [hl], c
                 ld      [hl], b
                 endr
-                
+
                 ld      sp, $fffe
-                
+
 Scroll:         ld      l, $42
                 ld      [hl], $28
                 inc     l
                 ld      [hl], $08
-                
+
+InitializePalette:
+                ld      a, 0
+                ld      [PaletteIndex], a
+
 EnableLCD:      ld      l, $40
                 set     7, [hl]
-                
+
 EnableInterrupts:
                 ld      l, $ff
                 set     0, [hl] ;V-Blank
-                
+
                 ei
                 jp      Main
+                
+
+
+section "Scratch", wram0
+PaletteIndex:   ds      1
 
 
 
 section "V-Blank interrupt", rom0[$40]
-                jp      VBlank
-                
+                jp      Lerp
+
 
 
 section "Data", romx, bank[1]
 PalletTownTiles:        incbin  "pallet-town.2bpp"
 PalletTownMap:          incbin  "pallet-town.tilemap"
 PalletTownPalette:      incbin  "pallet-town.pal"
+from0           equ     $030303
+from0r          set     (from0 >> 16) & $1f
+from0g          set     (from0 >> 8) & $1f
+from0b          set     from0 & $1f
+from1           equ     $17111f
+from1r          set     (from1 >> 16) & $1f
+from1g          set     (from1 >> 8) & $1f
+from1b          set     from1 & $1f
+from2           equ     $0b171f
+from2r          set     (from2 >> 16) & $1f
+from2g          set     (from2 >> 8) & $1f
+from2b          set     from2 & $1f
+from3           equ     $1f1f1f
+from3r          set     (from3 >> 16) & $1f
+from3g          set     (from3 >> 8) & $1f
+from3b          set     from3 & $1f
+to0             equ     $000000
+to0r            set     (to0 >> 16) & $1f
+to0g            set     (to0 >> 8) & $1f
+to0b            set     to0 & $1f
+to1             equ     $0c090f
+to1r            set     (to1 >> 16) & $1f
+to1g            set     (to1 >> 8) & $1f
+to1b            set     to1 & $1f
+to2             equ     $080405
+to2r            set     (to2 >> 16) & $1f
+to2g            set     (to2 >> 8) & $1f
+to2b            set     to2 & $1f
+to3             equ     $0f0e18
+to3r            set     (to3 >> 16) & $1f
+to3g            set     (to3 >> 8) & $1f
+to3b            set     to3 & $1f
+frame           set     0
+frames          equ     256
+
+lerp:           macro;a, b, f
+\4              set     \1 + \3 * (\2 - \1) / (-8 + frames)
+                endm
+                
+section "Palettes", romx[$5000], bank[1]
+InterpolatedPalette:    
+                rept    frames
+                lerp from0r, to0r, frame, red
+                lerp from0g, to0g, frame, green
+                lerp from0b, to0b, frame, blue
+                dw      red + (green << 5) + (blue << 10)
+
+                lerp from1r, to1r, frame, red
+                lerp from1g, to1g, frame, green
+                lerp from1b, to1b, frame, blue
+                dw      red + (green << 5) + (blue << 10)
+
+                lerp from2r, to2r, frame, red
+                lerp from2g, to2g, frame, green
+                lerp from2b, to2b, frame, blue
+                dw      red + (green << 5) + (blue << 10)
+
+                lerp from3r, to3r, frame, red
+                lerp from3g, to3g, frame, green
+                lerp from3b, to3b, frame, blue
+                dw      red + (green << 5) + (blue << 10)
+frame           set     frame + 1
+                endr
