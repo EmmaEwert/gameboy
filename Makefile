@@ -1,4 +1,4 @@
-roms=daycycle.gb weather.gb transparency.gb scanlines.gb den.gb lapras.gb
+roms=squish.gb daycycle.gb weather.gb transparency.gb scanlines.gb den.gb lapras.gb
 tools=colors palette still
 asmflags=-h -iinclude/
 fixflags=-c -i emma -j -k PD -l 0x33 -m 0x1b -p 0x40 -r 0x04 -t $(*F) -v
@@ -13,6 +13,12 @@ $(roms): %.gb: %/main.obj
 
 %.obj: %.rgbasm
 	rgbasm $(asmflags) -o$@ $<
+
+
+
+# Squish
+squish/main.rgbasm: $(addprefix include/pallet-town,.2bpp .pal .tilemap)
+
 
 
 # Daycycle

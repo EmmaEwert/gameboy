@@ -79,6 +79,7 @@ LCDStatus:      ld    hl, $ff41;│││││├┐
 ;─┴1────┴2─┴3────┴0─────┴2───┴3─┴0────┴0─┴2───┴3─┴0─┴1────────────────────┴─
 ; TODO: OAM interrupt
 ; TODO: Idealised cycle times, noting delay from interrupt to vector jump
+; TODO: Draw as pixel graphic, somehow
 
 
 
@@ -126,4 +127,4 @@ Debug:          ld    d, d;│
                 db          "Message"
 .end:
 
-; vim:ft=rgbasm et sts=2 sw=2
+; vim:ft=rgbds et sts=2 sw=2

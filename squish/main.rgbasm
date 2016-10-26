@@ -1,0 +1,159 @@
+section "Code", rom0
+Scroll:         ld      hl, $ff44;LY
+                ld      a, $29
+                cp      [hl]
+                jr      C, .stop
+                ld      hl, SCANLINES
+                ld      a, [hl]
+                dec     a
+                sra     a
+                sra     a
+                sra     a
+                sra     a
+                inc     a
+                ld      b, a
+                ld      a, [hl]
+                sub     b
+                ld      [hl], a
+                ld      a, b
+                ld      hl, $ff42
+                add     [hl]
+                ld      [hl], a
+                ret
+.stop:          ld      hl, $ff42
+                ld      [hl], $70
+                ret
+                
+ResetScroll:    ld      hl, SCANLINES
+                ld      [hl], 112
+                inc     hl
+                ld      a, [hl]
+                xor     1
+                ld      [hl], a
+                ld      hl, $ff42
+                ld      [hl], a
+                ret
+
+; 112 lines to squish between lines $00 and $40
+; 56    <  $08, ~7 per scanline         56 =  56, 56 remaining
+; 28    <  $10, ~3 per scanline        +24 =  80, 32 remaining
+; 14    <  $18,                        +16 =  96, 16 remaining
+;  7    <  $20                         + 8 = 104,  8 remaining
+;  3    <  $28                         + 4 = 108,  4 remaining
+;  2    <  $30                         + 2 = 110,  2 remaining
+;  2    <  $38                         + 1 = 111,  1 remaining
+;  1    <  $40                         + 1 = 112,  1 remaining
+;  0    >= $40
+; alternative approach: take 1/32th of what's left to scroll with, rounded up
+; should give smoother curve, and consumes remaining lines as early as possible,
+; making the middle less squished (last squish at ~$39, center is $48)
+; actual goal: un-squish houses and other objects
+
+
+
+section "V-Blank interrupt", rom0[$40]
+                call ResetScroll
+                reti
+                
+
+
+section "LCD Status interrupt", rom0[$48]       ;H-Blank
+                call Scroll
+                reti
+
+
+
+section "Memory", wram0
+SCANLINES:      ds 1
+FLIP:           ds 1
+SCROLL:         ds 1
+
+
+
+
+section "Data", romx, bank[1]
+Tiles:          incbin  "pallet-town.2bpp"
+tilesLength     equ     (@-Tiles)/16-1
+Map:            incbin  "pallet-town.tilemap"
+mapLength       equ     (@-Map)/16-1
+Palette:        incbin  "pallet-town.pal"
+                
+
+
+
+section "Header", rom0[$0100]
+                di
+                jp      Setup
+                ds      $50 - $4
+
+
+
+section "Main", rom0
+Main:           halt
+                nop
+                jr      Main
+                
+                
+
+Setup:
+DisableLCD:     ld      hl, $ff44
+                ld      a, $90
+.ltLY144:       cp      [hl]
+                jr      c, @+2
+                jr      nz, .ltLY144
+                ld      l, $40
+                res     7, [hl]
+
+SwitchSpeed:    ld      l, $4d
+                set     0, [hl]
+                stop
+
+Upload:         include "big-endian.inc"
+                ld      a, 1
+                ld      l, $55
+PalletTown:     
+.tiles          ldbe    bc, Tiles
+                ldbe    de, $8000
+                ld      sp, hl
+                push    de
+                push    bc
+                ld      [hl], tilesLength
+.map            ldbe    bc, Map
+                ldbe    de, $9800
+                ld      sp, hl
+                push    de
+                push    bc
+                ld      [hl], mapLength
+.palette:       ld      l, $68
+                ld      [hl], %10000000
+                inc     l
+                ld      sp, Palette
+                rept    $04
+                pop     bc
+                ld      [hl], c
+                ld      [hl], b
+                endr
+                ld      sp, $fffe
+                
+Center:         ld      l, $42
+                ld      [hl], $40
+                inc     l
+                ld      [hl], $30
+                
+SetupScroll:    ld      hl, SCANLINES
+                ld      a, 0
+                ld      [hl+], a
+                ld      [hl+], a
+                ld      [hl], a
+                
+EnableLCD:      ld      hl, $ff40
+                set     7, [hl]
+
+EnableInterrupts:
+                ld      l, $ff
+                set     0, [hl] ;V-Blank interrupt
+                set     1, [hl] ;LCD Status interrupt
+                ld      l, $41  ;LCD Status
+                set     3, [hl] ;H-Blank interrupt
+                ei
+                jp      Main
