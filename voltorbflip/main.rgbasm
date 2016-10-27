@@ -1,5 +1,223 @@
 section "Data", romx, bank[1]
-Tiles:          dw      `11111111 ;@
+delta           set     0
+OAM0:           rept    $05
+                db      $17+delta, $81, $5e, %00000000
+                db      $17+delta, $89, $5e, %00100000
+delta           set     delta+24
+                endr
+delta           set     0
+                rept    $05
+                db      $14+delta, $8b, $00, %00010000
+                db      $14+delta, $90, $00, %00010000
+                db      $1d+delta, $90, $00, %00010000
+delta           set     delta+24
+                endr
+                
+                rept    $100-(@-OAM0)
+                db      $00
+                endr
+                
+delta           set     0
+OAM1:           rept    $05
+                db      $8f, $09+delta, $5e, %00000000
+                db      $8f, $11+delta, $5e, %00100000
+delta           set     delta+24
+                endr
+delta           set     0
+                rept    $05
+                db      $14+delta, $8b, $00, %00010000
+                db      $14+delta, $90, $00, %00010000
+                db      $1d+delta, $90, $00, %00010000
+delta           set     delta+24
+                endr
+                
+                rept    $100-(@-OAM1)
+                db      $00
+                endr
+
+Tiles:          dw      `33330000
+                dw      `30330000
+                dw      `30330000
+                dw      `30330000
+                dw      `33330000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+
+                dw      `03300000
+                dw      `33300000
+                dw      `03300000
+                dw      `03300000
+                dw      `33330000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `33330000
+                dw      `00330000
+                dw      `33330000
+                dw      `33000000
+                dw      `33330000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `33330000
+                dw      `00330000
+                dw      `03330000
+                dw      `00330000
+                dw      `33330000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `30330000
+                dw      `30330000
+                dw      `33330000
+                dw      `00330000
+                dw      `00330000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `33330000
+                dw      `33000000
+                dw      `33330000
+                dw      `30330000
+                dw      `33330000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `33000000
+                dw      `33000000
+                dw      `33330000
+                dw      `33030000
+                dw      `33330000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `33330000
+                dw      `00330000
+                dw      `00330000
+                dw      `00330000
+                dw      `00330000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `33330000
+                dw      `30330000
+                dw      `33330000
+                dw      `30330000
+                dw      `33330000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `33330000
+                dw      `30330000
+                dw      `33330000
+                dw      `00330000
+                dw      `00330000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                rept    $40-(@-Tiles)/16
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                endr
+
+                dw      `11111111 ;@
                 dw      `11111111
                 dw      `11111111
                 dw      `11111111
@@ -262,21 +480,21 @@ Tiles:          dw      `11111111 ;@
                 
                 dw      `00000000 ;]
                 dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `00000000 ;^
+                dw      `00000000
                 dw      `00000033
                 dw      `00003321
                 dw      `00031111
                 dw      `00031111
                 dw      `00323111
                 dw      `00310331
-                
-                dw      `00000000 ;^
-                dw      `00000000
-                dw      `33000000
-                dw      `12330000
-                dw      `11113000
-                dw      `11113000
-                dw      `11132300
-                dw      `13301300
                 
                 dw      `00310301 ;_
                 dw      `00301111
@@ -287,12 +505,12 @@ Tiles:          dw      `11111111 ;@
                 dw      `00000000
                 dw      `00000000
                 
-                dw      `10301300 ;`
-                dw      `11110300
-                dw      `11003000
-                dw      `00003000
-                dw      `00330000
-                dw      `33000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
                 dw      `00000000
                 dw      `00000000
                 
@@ -341,6 +559,34 @@ Tiles:          dw      `11111111 ;@
                 dw      `00000000
                 dw      `00000000
                 
+                dw      `33333332 ;f
+                dw      `33333332
+                dw      `33333332
+                dw      `33333332
+                dw      `33333332
+                dw      `00000000
+                dw      `00000000
+                dw      `33333333
+                
+                dw      `22232222 ;g
+                dw      `32232322
+                dw      `32232322
+                dw      `32232322
+                dw      `22232222
+                dw      `00000000
+                dw      `00000000
+                dw      `33333333
+                
+                dw      `33333333 ;h
+                dw      `33332222
+                dw      `03332322
+                dw      `03332322
+                dw      `30332322
+                dw      `03332222
+                dw      `13333333
+                dw      `33333333
+                
+                
 sizeofTiles     equ     (@-Tiles)/16-1
 
 Map:            db      "EFFGFFGFFGFFGFFGFFHP@@@@@@@@@@@@"
@@ -352,8 +598,8 @@ Map:            db      "EFFGFFGFFGFFGFFGFFHP@@@@@@@@@@@@"
                 db      "IABJABJABJABJABJLLO@@@@@@@@@@@@@"
                 db      "ICDKCDKCDKCDKCDKMNO@@@@@@@@@@@@@"
                 db      "QRSTRSTRSTRSTRSTUUbdc@@@@@@@@@@@"
-                db      "ILLZLLZLLZLLZLLZaaaaO@@@@@@@@@@@"
-                db      "IMNZMNZMNZMNZMNZeeeeO@@@@@@@@@@@"
+                db      "IfgZfgZfgZfgZfgZaaaaO@@@@@@@@@@@"
+                db      "IMhZMhZMhZMhZMhZeeeeO@@@@@@@@@@@"
                 db      "[XX\\XX\\XX\\XX\\XX\\XXXXY@@@@@@@@@@@"
 sizeofMap       equ     (@-Map)/16-1
 
@@ -416,11 +662,72 @@ sizeofSpritePal equ     @-SpritePalette
 
 
 
+
+
+section "Code", rom0
+ResetGraphics:
+.graphics:      ld      a, OAM0/$100
+                call    DMATransfer
+                ld      a, %10001100
+                ld      b, %00001000
+                ld      de, %0011001000000011
+                ld      hl, $ff68
+                rept    $05
+                ld      [hl+], a
+                ld      [hl], e
+                ld      [hl], d
+                dec     l
+                add     b
+                endr
+                ret
+                
+
+
+SetGraphics:
+.palettes:      ld      hl, $ff41
+.while          bit     1, [hl]
+                jr      nz, .while
+                ld      a, %10001100
+                ld      b, %00001000
+                ld      de, %0010000100001000
+                ld      hl, $ff68
+                rept    $05
+                ld      [hl+], a
+                ld      [hl], e
+                ld      [hl], d
+                dec     l
+                add     b
+                endr
+.sprites:       ld      a, OAM1/$100
+                call    DMATransfer
+                ret
+
+
+
+
+
+section "High Memory", hram
+DMATransfer:    ds      10
+
+
+
+
+
 section "V-Blank interrupt", rom0[$40]
+                call    ResetGraphics
                 reti
                 
 
 
+
+
+section "LY=$78 interrupt", rom0[$48]
+                call    SetGraphics
+                reti
+                
+                
+
+                
 
 section "Header", rom0[$0100]
                 di
@@ -429,15 +736,29 @@ section "Header", rom0[$0100]
 
 
 
+
+
 section "Main", rom0
 Main:           halt
                 nop
                 jr      Main
                 
+
+
+DMATransferRAM: ld     [$ff46], a ;a=SRC/$100
+                ld     a, $28
+.wait:          dec  a
+                jr   nz, .wait
+                ret
+sizeofDMA       equ     @-DMATransferRAM
+                
                 
 
 Setup:
-DisableLCD:     ld      hl, $ff44
+.DetectDMG:     cp      $11
+                jp      nz, SetupDMG
+                
+.DisableLCD:    ld      hl, $ff44
                 ld      a, $90
 .ltLY144:       cp      [hl]
                 jr      c, @+2
@@ -445,11 +766,11 @@ DisableLCD:     ld      hl, $ff44
                 ld      l, $40
                 res     7, [hl]
                 
-Upload:         include "big-endian.inc"
+.Upload:         include "big-endian.inc"
                 ld      a, 1
                 ld      hl, $ff55
 .tiles          ldbe    bc, Tiles
-                ldbe    de, $8400
+                ldbe    de, $8000
                 ld      sp, hl
                 push    de
                 push    bc
@@ -471,88 +792,14 @@ Upload:         include "big-endian.inc"
                 ld      [hl], sizeofAttr
                 res     0, [hl] ;VRAM Bank 0
                 
-.sprites:       ld      hl, $fe00
-delta           set     0
-                rept    $05
-                ld      [hl], $17+delta
-                inc     l
-                ld      [hl], $81
-                inc     l
-                ld      [hl], $5d
-                inc     l
-                ld      [hl], $00
-                inc     l
-                
-                ld      [hl], $17+delta
-                inc     l
-                ld      [hl], $89
-                inc     l
-                ld      [hl], $5e
-                inc     l
-                ld      [hl], $00
-                inc     l
-                
-                ld      [hl], $1f+delta
-                inc     l
-                ld      [hl], $81
-                inc     l
-                ld      [hl], $5f
-                inc     l
-                ld      [hl], $00
-                inc     l
-                
-                ld      [hl], $1f+delta
-                inc     l
-                ld      [hl], $89
-                inc     l
-                ld      [hl], $60
-                inc     l
-                ld      [hl], $00
-                inc     l
-delta           set     delta + 24
+SetupOAMDMA:    ld      hl, DMATransferRAM
+                ld      de, DMATransfer
+                rept    sizeofDMA
+                ld      a, [hl+]
+                ld      [de], a
+                inc     de
                 endr
-delta           set     0
-                rept    $05
-                ld      [hl], $8f
-                inc     l
-                ld      [hl], $09+delta
-                inc     l
-                ld      [hl], $5d
-                inc     l
-                ld      [hl], $00
-                inc     l
-                
-                ld      [hl], $8f
-                inc     l
-                ld      [hl], $11+delta
-                inc     l
-                ld      [hl], $5e
-                inc     l
-                ld      [hl], $00
-                inc     l
-                
-                ld      [hl], $97
-                inc     l
-                ld      [hl], $09+delta
-                inc     l
-                ld      [hl], $5f
-                inc     l
-                ld      [hl], $00
-                inc     l
-                
-                ld      [hl], $97
-                inc     l
-                ld      [hl], $11+delta
-                inc     l
-                ld      [hl], $60
-                inc     l
-                ld      [hl], $00
-                inc     l
-delta           set     delta + 24
-                endr
-                ld      hl, $ff40
-                set     1, [hl];Enable sprites
-                
+
 .palette:       ld      hl, $ff68
                 ld      [hl], %10000000
                 inc     l
@@ -574,6 +821,9 @@ delta           set     delta + 24
                 
                 ld      sp, $fffe
                 
+Sprites:        ld      a, OAM0/$100
+                call    DMATransfer
+                
 SetupScroll:    ld      hl, $ff42
                 ld      [hl], $04
                 inc     l
@@ -581,9 +831,52 @@ SetupScroll:    ld      hl, $ff42
 
 EnableLCD:      ld      hl, $ff40
                 set     7, [hl]
+Set8x16Sprites: set     2, [hl]
+EnableSprites:  set     1, [hl]
 
 EnableInterrupts:
                 ld      hl, $ffff
                 set     0, [hl] ;V-Blank interrupt
+                set     1, [hl] ;LCD Status interrupt
+                ld      hl, $ff41
+                set     6, [hl]
+                ld      hl, $ff45
+                ld      [hl], $78
+                ld      hl, $ff0f
+                ld      [hl], $00
                 ei
                 jp      Main
+                
+                
+
+SetupDMG:       
+.DisableLCD:    ld      hl, $ff44
+                ld      a, $90
+.ltLY144:       cp      [hl]
+                jr      c, @+2
+                jr      nz, .ltLY144
+                ld      l, $40
+                res     7, [hl]
+.Upload
+.tiles:         ld      hl, Tiles
+                ld      de, $8000
+                rept    (sizeofTiles + 1) * 16
+                ld      a, [hl+]
+                ld      [de], a
+                inc     de
+                endr
+.map            ld      hl, Map
+                ld      de, $9800
+                rept    (sizeofMap + 1) * 16
+                ld      a, [hl+]
+                ld      [de], a
+                inc     de
+                endr
+.palette        ld      hl, $ff47
+                ld      [hl], %11100100
+                inc     hl
+                ld      [hl], %11100100
+                inc     hl
+                ld      [hl], %10010011
+                
+                jp      SetupOAMDMA
