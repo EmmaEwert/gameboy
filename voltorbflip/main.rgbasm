@@ -1,0 +1,589 @@
+section "Data", romx, bank[1]
+Tiles:          dw      `11111111 ;@
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                
+                dw      `33333333 ;A
+                dw      `32222222
+                dw      `32222111
+                dw      `32222111
+                dw      `32222111
+                dw      `32111222
+                dw      `32111222
+                dw      `32111222
+
+                dw      `33333333 ;B
+                dw      `22222223
+                dw      `11122223
+                dw      `11122223
+                dw      `11122223
+                dw      `22211123
+                dw      `22211123
+                dw      `22211123
+
+                dw      `32111222 ;C
+                dw      `32111222
+                dw      `32111222
+                dw      `32222111
+                dw      `32222111
+                dw      `32222111
+                dw      `32222222
+                dw      `33333333
+                
+                dw      `22211123 ;D
+                dw      `22211123
+                dw      `22211123
+                dw      `11122223
+                dw      `11122223
+                dw      `11122223
+                dw      `22222223
+                dw      `33333333
+                
+                dw      `22222222 ;E
+                dw      `22222222
+                dw      `22222222
+                dw      `22222211
+                dw      `22221111
+                dw      `22221111
+                dw      `22211110
+                dw      `22211100
+                
+                dw      `22222222 ;F
+                dw      `22222222
+                dw      `22222222
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `22222222 ;G
+                dw      `22222222
+                dw      `22222222
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `01111110
+                dw      `00111100
+                
+                dw      `22222222 ;H
+                dw      `22222222
+                dw      `22222222
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `01111111
+                dw      `00111111
+                
+                dw      `22211100 ;I
+                dw      `22211100
+                dw      `22211100
+                dw      `22211100
+                dw      `22211100
+                dw      `22211100
+                dw      `22211100
+                dw      `22211100
+                
+                dw      `00111100 ;J
+                dw      `00111100
+                dw      `00111100
+                dw      `00111100
+                dw      `00111100
+                dw      `00000000
+                dw      `00000000
+                dw      `03333330
+
+                dw      `03333330 ;K
+                dw      `00000000
+                dw      `00000000
+                dw      `00222200
+                dw      `00111100
+                dw      `00111100
+                dw      `00111100
+                dw      `00111100
+
+                dw      `33333333 ;L
+                dw      `33333333
+                dw      `33333333
+                dw      `33333333
+                dw      `33333333
+                dw      `00000000
+                dw      `00000000
+                dw      `33333333
+                
+                dw      `33333333 ;M
+                dw      `33333333
+                dw      `30333333
+                dw      `30303303
+                dw      `03333333
+                dw      `30033330
+                dw      `31000000
+                dw      `33310013
+                
+                dw      `33333333 ;N
+                dw      `33333333
+                dw      `03333333
+                dw      `03333333
+                dw      `30333333
+                dw      `03333333
+                dw      `13333333
+                dw      `33333333
+                
+                dw      `00111111 ;O
+                dw      `00111111
+                dw      `00111111
+                dw      `00111111
+                dw      `00111111
+                dw      `00111111
+                dw      `00111111
+                dw      `00111111
+                
+                dw      `22222222 ;P
+                dw      `22222222
+                dw      `22222222
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                
+                dw      `22211100 ;Q
+                dw      `22211120
+                dw      `22211112
+                dw      `22211111
+                dw      `22211111
+                dw      `22211111
+                dw      `22211110
+                dw      `22211100
+                
+                dw      `00000000 ;R
+                dw      `00000003
+                dw      `22222003
+                dw      `11111003
+                dw      `11111003
+                dw      `11111003
+                dw      `00000003
+                dw      `00000000
+                
+                dw      `00000000 ;S
+                dw      `30000000
+                dw      `30022222
+                dw      `30011111
+                dw      `30011111
+                dw      `30011111
+                dw      `30000000
+                dw      `00000000
+                
+                dw      `00111100 ;T
+                dw      `02111120
+                dw      `21111112
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `01111110
+                dw      `00111100
+                
+                dw      `00000000 ;U
+                dw      `00000000
+                dw      `22222222
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `00111111 ;V
+                dw      `02111111
+                dw      `21111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `01111111
+                dw      `00111111
+                
+                dw      `00111100 ;W
+                dw      `02111120
+                dw      `21111112
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `01111111
+                dw      `00111111
+                
+                dw      `00000000 ;X
+                dw      `00000000
+                dw      `22222222
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                
+                dw      `00111111 ;Y
+                dw      `02111111
+                dw      `21111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                
+                dw      `00111100 ;Z
+                dw      `00111100
+                dw      `00111100
+                dw      `00111100
+                dw      `00111100
+                dw      `00111100
+                dw      `00111100
+                dw      `00111100
+                
+                dw      `11111100 ;[
+                dw      `11111120
+                dw      `11111112
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                
+                dw      `00111100 ;\
+                dw      `02111120
+                dw      `21111112
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                
+                dw      `00000000 ;]
+                dw      `00000000
+                dw      `00000033
+                dw      `00003321
+                dw      `00031111
+                dw      `00031111
+                dw      `00323111
+                dw      `00310331
+                
+                dw      `00000000 ;^
+                dw      `00000000
+                dw      `33000000
+                dw      `12330000
+                dw      `11113000
+                dw      `11113000
+                dw      `11132300
+                dw      `13301300
+                
+                dw      `00310301 ;_
+                dw      `00301111
+                dw      `00030011
+                dw      `00030000
+                dw      `00003300
+                dw      `00000033
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `10301300 ;`
+                dw      `11110300
+                dw      `11003000
+                dw      `00003000
+                dw      `00330000
+                dw      `33000000
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `00000000 ;a
+                dw      `00000000
+                dw      `00000000
+                dw      `01333310
+                dw      `03333330
+                dw      `03300330
+                dw      `03300330
+                dw      `03300330
+                
+                dw      `00111111 ;b
+                dw      `02111111
+                dw      `21111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `11111111 ;c
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `01111111
+                dw      `00111111
+                
+                dw      `11111111 ;d
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `11111111
+                dw      `00000000
+                dw      `00000000
+                
+                dw      `03300330 ;e
+                dw      `03300330
+                dw      `03300330
+                dw      `03333330
+                dw      `01333310
+                dw      `00000000
+                dw      `00000000
+                dw      `00000000
+                
+sizeofTiles     equ     (@-Tiles)/16-1
+
+Map:            db      "EFFGFFGFFGFFGFFGFFHP@@@@@@@@@@@@"
+                rept    $04
+                db      "IABJABJABJABJABJLLO@@@@@@@@@@@@@"
+                db      "ICDKCDKCDKCDKCDKMNO@@@@@@@@@@@@@"
+                db      "QRSTRSTRSTRSTRSTUUV@@@@@@@@@@@@@"
+                endr
+                db      "IABJABJABJABJABJLLO@@@@@@@@@@@@@"
+                db      "ICDKCDKCDKCDKCDKMNO@@@@@@@@@@@@@"
+                db      "QRSTRSTRSTRSTRSTUUbdc@@@@@@@@@@@"
+                db      "ILLZLLZLLZLLZLLZaaaaO@@@@@@@@@@@"
+                db      "IMNZMNZMNZMNZMNZeeeeO@@@@@@@@@@@"
+                db      "[XX\\XX\\XX\\XX\\XX\\XXXXY@@@@@@@@@@@"
+sizeofMap       equ     (@-Map)/16-1
+
+Attributes:     rept    $20
+                db      $00
+                endr
+p               set     $01
+                rept    $05
+                db      0,0,0,p,0,0,p,0,0,p,0,0,p,0,0,p,p,p,0,0
+                dw      0,0,0,0,0,0
+                db      0,0,0,p,0,0,p,0,0,p,0,0,p,0,0,p,p,p,0,0
+                dw      0,0,0,0,0,0
+                db      0,1,1,0,2,2,0,3,3,0,4,4,0,5,5,0,0,0,0,0
+                dw      0,0,0,0,0,0
+p               set     p + 1
+                endr
+                db      0,1,1,0,2,2,0,3,3,0,4,4,0,5,5,0,6,6,6,6
+                dw      0,0,0,0,0,0
+                db      0,1,1,0,2,2,0,3,3,0,4,4,0,5,5,0,6,6,6,6
+                dw      0,0,0,0,0,0
+                rept    $300-(@-Attributes)
+                db      $00
+                endr
+sizeofAttr      equ     (@-Attributes)/16-1
+
+Palette:        dw      %0111111111111111;0
+                dw      %0011011010000101
+                dw      %0011001000000011
+                dw      %0001010010100101
+                dw      %0111111111111111;1
+                dw      %0011011010000101
+                dw      %0011001000000011
+                dw      %0010100111011100
+                dw      %0111111111111111;2
+                dw      %0011011010000101
+                dw      %0011001000000011
+                dw      %0010001010101000
+                dw      %0111111111111111;3
+                dw      %0011011010000101
+                dw      %0011001000000011
+                dw      %0001111010011101
+                dw      %0111111111111111;4
+                dw      %0011011010000101
+                dw      %0011001000000011
+                dw      %0111111001000110
+                dw      %0111111111111111;5
+                dw      %0011011010000101
+                dw      %0011001000000011
+                dw      %0111000110011000
+                dw      %0111111111111111;6
+                dw      %0101101100010100
+                dw      %0011001000000011
+                dw      %0010000100001000
+sizeofPalette   equ     @-Palette
+SpritePalette:  dw      %0111110000011111;0
+                dw      %0010100111011100
+                dw      %0010100101110100
+                dw      %0010000100001000
+sizeofSpritePal equ     @-SpritePalette
+
+
+
+section "V-Blank interrupt", rom0[$40]
+                reti
+                
+
+
+
+section "Header", rom0[$0100]
+                di
+                jp      Setup
+                ds      $50 - $4
+
+
+
+section "Main", rom0
+Main:           halt
+                nop
+                jr      Main
+                
+                
+
+Setup:
+DisableLCD:     ld      hl, $ff44
+                ld      a, $90
+.ltLY144:       cp      [hl]
+                jr      c, @+2
+                jr      nz, .ltLY144
+                ld      l, $40
+                res     7, [hl]
+                
+Upload:         include "big-endian.inc"
+                ld      a, 1
+                ld      hl, $ff55
+.tiles          ldbe    bc, Tiles
+                ldbe    de, $8400
+                ld      sp, hl
+                push    de
+                push    bc
+                ld      [hl], sizeofTiles
+.map            ldbe    bc, Map
+                ldbe    de, $9800
+                ld      sp, hl
+                push    de
+                push    bc
+                ld      [hl], sizeofMap
+.attributes:    ld      hl, $ff4f
+                set     0, [hl] ;VRAM Bank 1
+                ld      hl, $ff55
+                ldbe    bc, Attributes
+                ldbe    de, $9800
+                ld      sp, hl
+                push    de
+                push    bc
+                ld      [hl], sizeofAttr
+                res     0, [hl] ;VRAM Bank 0
+                
+.sprites:       ld      hl, $fe00
+delta           set     0
+                rept    $05
+                ld      [hl], $17+delta
+                inc     l
+                ld      [hl], $81
+                inc     l
+                ld      [hl], $5d
+                inc     l
+                ld      [hl], $00
+                inc     l
+                
+                ld      [hl], $17+delta
+                inc     l
+                ld      [hl], $89
+                inc     l
+                ld      [hl], $5e
+                inc     l
+                ld      [hl], $00
+                inc     l
+                
+                ld      [hl], $1f+delta
+                inc     l
+                ld      [hl], $81
+                inc     l
+                ld      [hl], $5f
+                inc     l
+                ld      [hl], $00
+                inc     l
+                
+                ld      [hl], $1f+delta
+                inc     l
+                ld      [hl], $89
+                inc     l
+                ld      [hl], $60
+                inc     l
+                ld      [hl], $00
+                inc     l
+delta           set     delta + 24
+                endr
+delta           set     0
+                rept    $05
+                ld      [hl], $8f
+                inc     l
+                ld      [hl], $09+delta
+                inc     l
+                ld      [hl], $5d
+                inc     l
+                ld      [hl], $00
+                inc     l
+                
+                ld      [hl], $8f
+                inc     l
+                ld      [hl], $11+delta
+                inc     l
+                ld      [hl], $5e
+                inc     l
+                ld      [hl], $00
+                inc     l
+                
+                ld      [hl], $97
+                inc     l
+                ld      [hl], $09+delta
+                inc     l
+                ld      [hl], $5f
+                inc     l
+                ld      [hl], $00
+                inc     l
+                
+                ld      [hl], $97
+                inc     l
+                ld      [hl], $11+delta
+                inc     l
+                ld      [hl], $60
+                inc     l
+                ld      [hl], $00
+                inc     l
+delta           set     delta + 24
+                endr
+                ld      hl, $ff40
+                set     1, [hl];Enable sprites
+                
+.palette:       ld      hl, $ff68
+                ld      [hl], %10000000
+                inc     l
+                ld      sp, Palette
+                rept    sizeofPalette / 2
+                pop     bc
+                ld      [hl], c
+                ld      [hl], b
+                endr
+                ld      hl, $ff6a
+                ld      [hl], %10000000
+                inc     l
+                ld      sp, SpritePalette
+                rept    sizeofSpritePal / 2
+                pop     bc
+                ld      [hl], c
+                ld      [hl], b
+                endr
+                
+                ld      sp, $fffe
+                
+SetupScroll:    ld      hl, $ff42
+                ld      [hl], $04
+                inc     l
+                ld      [hl], $04
+
+EnableLCD:      ld      hl, $ff40
+                set     7, [hl]
+
+EnableInterrupts:
+                ld      hl, $ffff
+                set     0, [hl] ;V-Blank interrupt
+                ei
+                jp      Main
