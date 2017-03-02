@@ -59,7 +59,7 @@ these colours, in the GBC 15-bit format.
 
 
 
-[daycycle]: http://65.media.tumblr.com/4ed30c435b4146dc97c78fa826dc45b9/tumblr_inline_ofkjljbU4t1seqeh7_500.gif
-[scanlines]: http://65.media.tumblr.com/e5d708f2f25f1b2972ad6b0361a7190f/tumblr_inline_ofa58tqSS01seqeh7_500.png
-[transparency]: http://66.media.tumblr.com/068f7f6be91e869d83ad025c92c3cea2/tumblr_inline_ofbfyvdpZM1seqeh7_500.png
-[weather]: http://66.media.tumblr.com/3d51daa4dd19effac46bc1958583039e/tumblr_inline_ofh89xDzIO1seqeh7_500.gif
+[daycycle]: http://media.tumblr.com/4ed30c435b4146dc97c78fa826dc45b9/tumblr_inline_ofkjljbU4t1seqeh7_500.gif
+[scanlines]: http://media.tumblr.com/e5d708f2f25f1b2972ad6b0361a7190f/tumblr_inline_ofa58tqSS01seqeh7_500.png
+[transparency]: http://media.tumblr.com/068f7f6be91e869d83ad025c92c3cea2/tumblr_inline_ofbfyvdpZM1seqeh7_500.png
+[weather]: http://media.tumblr.com/3d51daa4dd19effac46bc1958583039e/tumblr_inline_ofh89xDzIO1seqeh7_500.gif
